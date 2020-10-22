@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Технические каталоги компонентов - Альфа | Дзержинск
+{% endblock %}
+
+{% block metatags %}
+<meta name="Description"
+    content="Техническая информация о компонентах двигателей. Анализ, сравнение, подбор и особенности работы." />
+{% endblock %}
+
+{% block links %}
+
+{% endblock links %}
+
+{% block content %}
+<div class="container">
+    <div class="breadcrumbs">
+        <a href="/">Главная</a> / Информация / Технические каталоги компонентов
+    </div>
+</div>
+<div class="container">
+
+    <h1>Технические каталоги компонентов</h1><span class="line" style="width: 900px;"></span>
+    <div class="column-wrap" style="align-items: center;">
+        <div class="tehcat-item">
+            <div class="tehcat-item-img">
+                <img src="{% static 'img/tehcat_1.png' %}" alt="" width="100%"
+                    style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.53);">
+            </div>
+            <div class="tehcat-item-info">
+                <div class="tehcat-item-info-name">
+                    <h2>Подшипники скольжения</h2>
+                </div>
+                <div class="tehcat-item-info-desc">В разделе собрана полезная информация о видах, отличиях и
+                    особенностях подшипников скольжения, которые используются в двигателях внутреннего сгорания разных
+                    размеров. Статья содержит руководство по подбору, замене и специнструмент для ремонта.</div>
+                <div class="tehcat-item-info-url"><a href="/bearingcat">»Технический каталог (Подшипники скольжения)</a></div>
+            </div>
+        </div>
+        <div class="tehcat-item">
+            <div class="tehcat-item-img">
+                <img src="{% static 'img/tehcat_2.png' %}" alt="" width="100%"
+                    style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.53);">
+            </div>
+            <div class="tehcat-item-info">
+                <div class="tehcat-item-info-name">
+                    <h2>Топливная система дизельных двигателей</h2>
+                </div>
+                <div class="tehcat-item-info-desc">В разделе собрана полезная информация о видах, отличиях и
+                    особенностях топливных систем, которые используются в двигателях внутреннего сгорания разных
+                    размеров. Разобрана конструкция плунжерной пары топливного насоса.</div>
+                <div class="tehcat-item-info-url"><a href="/fuelcat">»Технический каталог (топливная система)</a></div>
+            </div>
+        </div>
+        <div class="tehcat-item">
+            <div class="tehcat-item-img">
+                <img src="{% static 'img/tehcat_3.png' %}" alt="" width="100%"
+                    style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.53);">
+            </div>
+            <div class="tehcat-item-info">
+                <div class="tehcat-item-info-name">
+                    <h2>Уплотнение клапанов двигателей</h2>
+                </div>
+                <div class="tehcat-item-info-desc">В разделе собрана полезная информация о видах, отличиях и
+                    особенностях резинотехнических деталей, которые используются для уплотнений клапанов в двигателях
+                    внутреннего сгорания разных размеров. Статья содержит руководство по подбору, замене и
+                    специнструмент для ремонта.</div>
+                <div class="tehcat-item-info-url"><a href="/sealscat">»Технический каталог (уплотнение клапанов двигателя)</a>
+                </div>
+            </div>
+        </div>
+        <div class="tehcat-item">
+            <div class="tehcat-item-img">
+                <img src="{% static 'img/tehcat_4.png' %}" alt="" width="100%"
+                    style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.53);">
+            </div>
+            <div class="tehcat-item-info">
+                <div class="tehcat-item-info-name">
+                    <h2>Торцевые (механические) уплотнения насосов</h2>
+                </div>
+                <div class="tehcat-item-info-desc">В разделе собрана полезная информация о видах, отличиях и
+                    особенностях торцевых уплотнений, которые используются для уплотнений клапанов в двигателях
+                    внутреннего сгорания разных размеров. Статья содержит сведения и анализ элементов уплотнений.</div>
+                <div class="tehcat-item-info-url"><a href="/sealspumpcat">»Технический каталог (торцевые уплотнения насосов)</a></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<script>
+
+</script>
+
+
+{% endblock scripts %}

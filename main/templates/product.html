@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Продукция компонентов двигателей - Альфа | Дзержинск
+{% endblock %}
+
+{% block metatags %}
+<meta name="Description"
+    content="Компания Альфа занимается разработкой и продажей компонентов промышленных дизелей отечественного и импортного производства." />
+{% endblock %}
+
+{% block links %}
+
+{% endblock links %}
+{% block breadcrumbs %}
+
+{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="breadcrumbs">
+        <a href="/">Главная</a> / <a href="/product">Продукция</a>
+    </div>
+</div>
+<div class="container">
+    <h1>Продукция</h1><span class="line"></span>
+
+    <div class="product-wrapper">
+
+        <a href="/bearing" class="product-item">
+            <div class="product-item-img">
+                <img src="{% static 'img/product_1.png' %}" alt="" height="100%">
+            </div>
+            <div class="product-item-desc">
+                Подшипники скольжения для судовых и промышленных двигателей.
+                Вкладыши шатунные и коренные.
+                Втулки скольжения.
+            </div>
+            <div class="product-item-name">
+                Подшипники
+            </div>
+        </a>
+        <a href="/seals" class="product-item">
+            <div class="product-item-img">
+                <img src="{% static 'img/product_2.png' %}" alt="" height="100%">
+            </div>
+            <div class="product-item-desc">
+                Маслосъемные колпачки для ДВС, различные уплотнения и детали из каучуковой , силиконовой, фторкаучуковых
+                смесей
+            </div>
+            <div class="product-item-name">
+                Уплотнения клапанов
+            </div>
+        </a>
+        <a href="/fuel" class="product-item">
+            <div class="product-item-img">
+                <img src="{% static 'img/product_3.png' %}" alt="" height="100%">
+            </div>
+            <div class="product-item-desc">
+                Топливная аппаратура для дизелей отечественного производства.
+                Плунжерная пара, клапан нагнетательный.
+            </div>
+            <div class="product-item-name">
+                Компоненты впрыска
+            </div>
+        </a>
+        <a href="/sealspump" class="product-item">
+            <div class="product-item-img">
+                <img src="{% static 'img/01).png' %}" alt="" height="100%">
+            </div>
+            <div class="product-item-desc">
+                Торцевые уплотнения для жидкостных насосов.
+            </div>
+            <div class="product-item-name">
+                Уплотнения насосов
+            </div>
+        </a>
+        <a href="/gasket" class="product-item">
+            <div class="product-item-img">
+                <img src="{% static 'img/11.png' %}" alt="" height="100%">
+            </div>
+            <div class="product-item-desc">
+                Прокладки фланцевые из безасбестового паронита.Прокладки армированные стальной фольгой, с защитными
+                внутренними кольцами (обтюратором).
+            </div>
+            <div class="product-item-name">
+                Безасбестовые уплотнения
+            </div>
+        </a>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<script>
+
+</script>
+
+
+{% endblock scripts %}

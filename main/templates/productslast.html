@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    Остатки продукции - Альфа | Дзержинск
+{% endblock %}
+
+{% block metatags %}
+<meta name="Description"
+    content="Ознакомиться с количеством остатка продукции для деталей на двигатели: подшипники скольжения (вкладыши,втулки ), резиновые детали, торцевые уплотнения насосов и прокладки" />
+{% endblock %}
+
+{% block links %}
+
+{% endblock links %}
+
+{% block content %}
+
+<div class="container">
+
+    <h1>Продукция остаток</h1><span class="line" style="width: 800px;"></span>
+    
+    <br>
+    <div class="table-overflow__wrapper">
+        <table class="table table-hover table-sm">
+            <thead>
+                <tr>
+                    <th scope="col" style="width: 40%;">Товар</th>
+                    <th scope="col" style="width: 10%; text-align: center;">Кол-во на складе</th>
+                    <th scope="col" style="width: 30%;text-align: center;">Применяемость</th>
+                    <th scope="col" style="width: 20%; text-align: center;">Изготовитель</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in perspective %}
+                <tr>
+                    <td style="text-align: center;">{{ item.name }}</td>
+                    <td style="text-align: center;">{{ item.quantity }}</td>
+                    <td style="text-align: center;">
+                        {% for use in item.usingUrl %}
+                        {% for key, value in use.items %}
+                        {% if value != '' %}
+                        <a href="{{value}}">{{key}}</a>,
+                        {% else %}
+                        {% if key == key|last %}
+                        {{key}}
+                        {% else %}
+                        {{key}},
+                        {% endif %}
+                        {% endif %}
+                        {% endfor %}
+                        {% endfor %}</td>
+                    <td style="text-align: center;">{{ item.manufactur }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+
+
+{% endblock scripts %}

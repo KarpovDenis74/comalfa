@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Галерея продукции - Альфа | Дзержинск
+{% endblock %}
+
+{% block metatags %}
+<meta name="Description"
+    content="Фото компонентов и деталей .Подшипники скольжения, прокладки армированные, резиновые детали, компоненты двигателя" />
+{% endblock %}
+
+{% block links %}
+
+{% endblock links %}
+
+{% block content %}
+<div class="container">
+    <div class="breadcrumbs">
+        <a href="/">Главная</a> / Информация / Галерея
+    </div>
+</div>
+<div class="container">
+
+    <h1>Галерея</h1><span class="line"></span>
+    <!-- Gridder navigation -->
+    <div class="gallery-wrap">
+        {% for gallery_item in imgs %}
+        <div class="gallery-item">
+            <img src="{{gallery_item.img.url}}" class="gallery-img__item__img" alt="{{gallery_item.name}} {{gallery_item.description}}" 
+                img_dsc="{{gallery_item.description}}" img_name="{{gallery_item.name}}" width="230px" title="{{gallery_item.name}} {{gallery_item.description}}" onclick="expandImg(this)">
+        </div>
+
+        {% endfor %}
+    </div>
+    <div class="pagination">
+        <span class="step-links">
+            {% if imgs.has_previous %}
+            <a href="?page={{ imgs.previous_page_number }}"><i class="flaticon-left-arrow"></i></a>
+            {% else %}
+            <div><i class="flaticon-left-arrow"></i></div>
+            {% endif %}
+            {% for page in num_pages %}
+            {% if page ==  imgs.number%}
+            <div class="curr_page">{{page}}</div>
+            {% else %}
+            <a href="?page={{page}}" class="num_page">{{page}}</a>
+            {% endif %}
+            
+            {% endfor %}
+            {% if imgs.has_next %}
+            <a href="?page={{ imgs.next_page_number }}"><i class="flaticon-right-arrow"></i></a>
+            {% else %}
+            <div><i class="flaticon-right-arrow"></i></div>
+            {% endif %}
+
+        </span>
+    </div>
+</div>
+
+<div class="img-full">
+    <div class="img-full__close">
+        <i class="fas fa-times fa-4x" id="hide_img" style="padding: 30px; cursor: pointer;"></i>
+    </div>
+    <div class="img-full__content">
+        <div class="full-image">
+            <img src="" id="expandImg" alt="" height="100%">
+        </div>
+        <div class="full-info">
+            <h5 id="expandImg_name"></h5>
+            <p id="expandImg_desc"></p>
+        </div>
+    </div>
+
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    $('#hide_img').click(function () {
+        document.getElementsByClassName('img-full')[0].style.display = 'none';
+    });
+
+    function expandImg(imgs) {
+        document.getElementsByClassName('img-full')[0].style.display = 'flex';
+        document.getElementById('expandImg').src = imgs.src;
+        document.getElementById('expandImg').alt = imgs.alt;
+        $('#expandImg').attr('img_name');
+        document.getElementById('expandImg_name').innerHTML = $(imgs).attr('img_name');
+        document.getElementById('expandImg_desc').innerHTML = $(imgs).attr('img_dsc');
+    }
+</script>
+
+
+{% endblock scripts %}

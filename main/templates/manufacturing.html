@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Контрактное производство - Альфа | Дзержинск
+{% endblock %}
+
+{% block metatags %}
+<meta name="Description"
+    content="Компания Альфа занимается услугами контрактного производства деталей и компонентов промышленных дизелей отечественного и импортного производства" />
+{% endblock %}
+
+{% block links %}
+
+{% endblock links %}
+
+{% block content %}
+<div class="container">
+    <div class="breadcrumbs">
+        <a href="/">Главная</a> / <a href="/services">Услуги</a> / Контрактное производство
+    </div>
+</div>
+<div class="container">
+
+    <div class="bearing-wrap">
+        <div class="bearing-wrap-info">
+            <h1>Контрактное производство
+            </h1><span class="line"></span>
+            <div class="bearing_img__aftertext">
+                <img src="{% static 'img/manufac.png' %}" alt="" class="bearing_img__aftertext__img">
+            </div>
+            <div class="bearing-wrap-text">
+                Одно из основных направлений деятельности компании это контактное производство деталей для различных отраслей промышленности.
+                Разрабатываем детали типа :
+                <ul>
+                    <li>вал</li>
+                    <li>втулка</li>
+                    <li>шкив</li>
+                    <li>фланец</li>
+                    <li>подшипник скольжения</li>
+                    <li>кольца и прокладки каучуковые</li>
+                    <li>пресс-формы</li>
+                    <li>спец. метизы</li>
+                    <li>механические уплотнения для насосов</li>
+                </ul>
+            </div>
+        </div>
+        <div class="bearing-wrap-img">
+            <img src="{% static 'img/manufac.png' %}" alt="" height="100%">
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<script>
+
+</script>
+
+
+{% endblock scripts %}

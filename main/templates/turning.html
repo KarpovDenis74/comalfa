@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Металлообработка - Альфа | Дзержинск
+{% endblock %}
+
+{% block metatags %}
+<meta name="Description"
+    content="Оказание спектра услуг по обработке металлов, начиная от серийного изготовления изделий заканчивая производством сборных узлов и механизмов по технической документации заказчика. (обработка металла резанием, термообработка металла, гальваническое покрытие, сборка деталей в узлы)" />
+{% endblock %}
+
+{% block links %}
+
+{% endblock links %}
+
+{% block content %}
+<div class="container">
+    <div class="breadcrumbs">
+        <a href="/">Главная</a> / <a href="/services">Услуги</a> / Металлообработка
+    </div>
+</div>
+<div class="container">
+
+    <div class="bearing-wrap">
+        <div class="bearing-wrap-info">
+            <h1>Металлообработка
+            </h1><span class="line"></span>
+            <br>
+            <div class="bearing_img__aftertext">
+                <img src="{% static 'img/turning.png' %}" alt="" class="bearing_img__aftertext__img">
+            </div>
+            <div class="bearing-wrap-text">
+                Мы оказываем спектр услуг по обработке металлов, начиная от серийного изготовления изделий заканчивая
+                производством сборных узлов и механизмов по технической документации заказчика. Обрабатываем различные
+                виды металлов: сталь, чугун, алюминий, бронза, латунь.
+                <ul>
+                    <li>обработка металла резанием</li>
+                    <li>термообработка металла</li>
+                    <li>гальваническое покрытие</li>
+                    <li>сборка деталей в узлы</li>
+                </ul>
+            </div>
+        </div>
+        <div class="bearing-wrap-img">
+            <img src="{% static 'img/turning.png' %}" alt="" height="100%">
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<script>
+
+</script>
+
+
+{% endblock scripts %}

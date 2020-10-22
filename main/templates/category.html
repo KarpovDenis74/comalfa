@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Каталоги деталей и запасных частей - Альфа | Дзержинск
+{% endblock %}
+
+{% block metatags %}
+<meta name="Description"
+    content="Каталоги деталей и запасных частей - Альфа | Дзержинск" />
+{% endblock %}
+
+{% block links %}
+
+{% endblock links %}
+
+{% block content %}
+<div class="container">
+    <div class="breadcrumbs">
+        <a href="/">Главная</a> / Информация / Каталоги деталей и запасных частей
+    </div>
+</div>
+<div class="container">
+    <h1 class="bot_line">Каталоги деталей и запасных частей</h1>
+    {% if user.is_superuser %}
+    <br>
+    <div class="moder-refresh">
+        <h2>Добавление каталога</h2>
+        <h5>Добавление каталога двигателя</h5>
+        <p style="font-size: 11px;">Необходимо загрузить файл *.mdb</p>
+        <form name="addNewCategory" method="post" action="" enctype="multipart/form-data"> {% csrf_token %}
+            <label for="engine_name">Название двигателя</label>
+            <input type="text" name="engine_name" required>
+            <br>
+            <label for="file">mdb-файл с каталогом</label>
+            <input type="file" name="file" required>
+            <br>
+            <button type="submit" class="btn btn-outline-success" id="submit" onsubmit="return false;">Добавить</button>
+        </form>
+    </div>
+    {% else %}
+
+    {% endif %}
+    {% for category in categorys %}
+    <div class="category-item">
+        <div class="category-item-img">
+            <img src="{{category.img.url}}" alt="" height="110px">
+        </div>
+        <div class="category-item-info">
+            <div class="category-item-info__title" onclick="open_info(this)">
+                <bold>{{category.name}}</bold><i class="fas fa-chevron-down" id="spoiler_ico"></i>
+            </div>
+            <span style="font-size: 14px; padding-top: 7px;">{{category.manufactur}}</span>
+            <div class="category-item-more">
+                <div class="category-item-more-guides">
+                    <div class="spoiler-btn__catalog">
+                        <p>
+                            <bold>Руководства</bold>
+                        </p>
+                    </div>
+                    <div class="spoiler-text">
+                        {% for guide in category.seriesengineguides_set.all %}
+                        <a href="/pdfviewer/{{guide.filename}}">{{guide.name}}</a> <br>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="category-item-more-engines">
+                    <div class="spoiler-btn__catalog">
+                        <p>
+                            <bold>Каталог деталей</bold>
+                        </p>
+                    </div>
+                    <div class="spoiler-text">
+                        {% for engine in category.engine_set.all %}
+                        <!-- <a href="{{engine.id}}/units">{{engine.name}}</a> -->
+                        {% if engine.filePDF %}
+                        <a href="/pdfviewer/{{engine.filename}}">{{engine.name}} (pdf)</a>
+                        {% else %}
+                        <a href="{{engine.id}}/units">{{engine.name}}</a>
+                        {% endif %}
+                        <br>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <a href="/category/{{category.id}}/units"> {{category.name}}</a><br> -->
+
+
+    {% endfor %}
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    function open_info(div) {
+        var arrow = div.childNodes[2];
+        var panel = div.nextElementSibling.nextElementSibling.childNodes[1].childNodes[3];
+        var panelEng = div.nextElementSibling.nextElementSibling.childNodes[3].childNodes[3];
+        if (panel.style.display === "block") {
+            panel.style.display = "none";
+            panelEng.style.display = "none";
+            $(arrow).addClass('fa-chevron-down').removeClass('fa-chevron-up');
+
+        } else {
+            panel.style.display = "block";
+            panelEng.style.display = "block";
+            $(arrow).addClass('fa-chevron-up').removeClass('fa-chevron-down');
+        }
+    }
+    $('#submit').click(function () {
+        showPopUpLoading('Добавление нового двигателя. Ожидайте...');
+        var fd = new FormData(addNewCategory);
+        fetch("/add_category/", {
+            method: "POST",
+            body: fd
+        }).then(function (response) {
+            // location.reload();
+
+            return response.json();
+        }).then(function (data) {
+            console.log(data);
+            if(data == 'success') {
+                showPopUp('Добавление прошло успешно')
+            }
+            else if(data == 'file_error') {
+                showPopUpError('Ошибка при сохранении файла')
+            }
+            else if(data == 'parsing_error') {
+                showPopUpError('Ошибка в mdb-файле')
+            }
+            else {
+                showPopUpError('Ошибка при добавлении')
+            }
+        });
+        return false;
+    });
+</script>
+{% endblock scripts %}

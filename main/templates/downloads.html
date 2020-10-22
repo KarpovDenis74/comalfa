@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Загрузки - Альфа | Дзержинск
+{% endblock %}
+
+{% block metatags %}
+<meta name="Description" content="Данные для скачивание остатков склада и прайс лист товаров для двигателей" />
+{% endblock %}
+
+{% block links %}
+
+<link rel="stylesheet" href="{% static 'css/moderation.css' %}">
+<link rel="stylesheet" href="{% static 'css/datepicker.min.css' %}">
+{% endblock links %}
+
+{% block content %}
+<div class="container">
+    <div class="breadcrumbs">
+        <a href="/">Главная</a> / Информация / Загрузки
+    </div>
+</div>
+<div class="container">
+    <h1>Загрузки</h1><span class="line"></span>
+    <br>
+    <div class="moder-news-list">
+        {% for doc in docs %}
+        <div class="download-item-page">
+            <div class="news-item__img" style="background: url({% static 'img/excel.png' %}) no-repeat center/30%;">
+            </div>
+            <div class="news-item__title">
+                <h3>{{ doc.name }}</h3>
+            </div>
+            <div class="news-item__description">
+                Файл
+            </div>
+            <div class="news-item__about">
+                <a href="{{ doc.data.url }}">Скачать</a>
+                {% if forloop.counter == 1 %}
+                <a href="/productsprice/">Просмотр</a>
+                {% else %}
+                <a href="/productslast/">Просмотр</a>
+                {% endif %}
+                <span class="downloads_date" style="float: right; bottom: 0; font-size: 12px;">{{doc.date}}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    $('#submit_product_price').click(function () {
+        var fd = new FormData(product_price);
+
+        fetch("/refresh_product_price/", {
+            method: "POST",
+            body: fd
+        }).then(function (response) {
+            return response.json();
+        }).then(function (data) {
+            if (data == 'success') {
+                showPopUp('Обновление прошло успешно')
+            }
+            else {
+                showPopUpError('Ошибка при обновлении')
+            }
+            console.log(data);
+        });
+        return false;
+    });
+
+    $('#submit_product_last').click(function () {
+        var fd = new FormData(product_last);
+
+        fetch("/refresh_product_last/", {
+            method: "POST",
+            body: fd
+        }).then(function (response) {
+            return response.json();
+        }).then(function (data) {
+            if (data == 'success') {
+                showPopUp('Обновление прошло успешно')
+            }
+            else {
+                showPopUpError('Ошибка при обновлении')
+            }
+            console.log(data);
+        });
+        return false;
+    });
+</script>
+{% endblock scripts %}

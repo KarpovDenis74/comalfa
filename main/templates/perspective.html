@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Перспективная продукция - Альфа | Дзержинск
+{% endblock %}
+
+{% block metatags %}
+<meta name="Description"
+    content="Компания Альфа занимается освоением и разработкой новой продукции для судовых и промышленных дизельных двигателей. Список продукции для освоения в ближайшее время" />
+{% endblock %}
+
+{% block links %}
+
+{% endblock links %}
+
+{% block content %}
+<div class="container">
+    <div class="breadcrumbs">
+        <a href="/">Главная</a> / Информация / Перспективная продукция
+    </div>
+</div>
+<div class="container">
+
+    <h1>Перспективная продукция</h1><span class="line" style="width: 800px;"></span>
+    <br>
+    <div class="table-overflow__wrapper">
+        <table class="table table-hover table-sm">
+            <thead>
+                <tr>
+                    <th scope="col" style="width: 50%;">Наименование изделия</th>
+                    <th scope="col" style="width: 50%; text-align: center;">Применение</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in perspective %}
+                <tr>
+                    <td>{{ item.name }} {{item.mark}}</td>
+                    <td style="text-align: center;">
+                        {% for use in item.usingUrl %}
+                        {% for key, value in use.items %}
+                        {% if value != '' %}
+                        <a href="{{value}}">{{key}}</a>,
+                        {% else %}
+                        {% if key == key|last %}
+                        {{key}}
+                        {% else %}
+                        {{key}},
+                        {% endif %}
+                        {% endif %}
+                        {% endfor %}
+                        {% endfor %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    $('#submit').click(function () {
+        var fd = new FormData(refreshPerspective);
+
+        fetch("/refresh_perspective_goods/", {
+            method: "POST",
+            body: fd
+        }).then(function (response) {
+            return response.json();
+        }).then(function (data) {
+            if (data == 'success') {
+                showPopUp('Обновление прошло успешно')
+            }
+            else {
+                showPopUpError('Ошибка при обновлении')
+            }
+            console.log(data);
+        });
+        return false;
+    });
+</script>
+
+
+{% endblock scripts %}

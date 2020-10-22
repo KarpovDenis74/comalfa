@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Альфа | Дзержинск - Разработка и поставка деталей машиностроения
+{% endblock %}
+
+{% block metatags %}
+<meta name="Description"
+    content="Разработчик и поставщик компонентов машиностроения. Детали двигателей :подшипники скольжения (вкладыши,втулки ), резиновые детали, торцевые уплотнения насосов и прокладки" />
+{% endblock %}
+
+
+{% block links %}
+
+{% endblock links %}
+
+{% block content %}
+<div class="container">
+    <div class="breadcrumbs">
+        <a href="/">Главная</a> / Информация / <a href="/category">Каталоги деталей</a> / {{enginePDF.name}}
+    </div>
+</div>
+<div class="container">
+    <h1>{{enginePDF.name}}</h1><span class="line"></span>
+</div>
+
+<div class="center_pdf-viewer" style="text-align: center;">
+    <div class="navigation-panel">
+        <div class="page-before__wrapper">
+            <span class="navigation_btn" id="first">Первая</span>
+            <span class="navigation_btn" id="prev">Назад</span>
+        </div>
+        <div class="page-main__wrapper">
+            <span><span id="page_num"></span><input type="text" id="autoCompInput" class="page_input"
+                    style="width: 40px;">
+                / <span class="bold" id="page_count"></span></span>
+        </div>
+        <div class="page-after__wrapper">
+            <span class="navigation_btn" id="next">Вперед</span>
+            <span class="navigation_btn" id="last">Последняя</span>
+            <span class="rotate_btn" id="rotateLeft"><i class="fas fa-undo"></i></span>
+            <span class="rotate_btn" id="rotateRight"><i class="fas fa-undo fa-flip-horizontal"></i></span>
+        </div>
+
+
+    </div>
+    <div class="canvas-wrapper">
+        <canvas id="pdf"></canvas>
+    </div>
+
+</div>
+
+
+
+{% endblock content %}
+
+{% block scripts %}
+<script src="{% static 'js/pdf.js' %}"></script>
+<script src="{% static 'js/pdf.worker.js' %}"></script>
+<script>
+    
+    var url = '/media/GuidesForEngines/{{ url }}';
+    console.log(url)
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
+
+    var pdfDoc = null,
+        pageNum = 1,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 1.45,
+        canvas = document.getElementById('pdf'),
+        ctx = canvas.getContext('2d');
+
+
+    function renderPage(num) {
+        pageRendering = true;
+        // Using promise to fetch the page
+        pdfDoc.getPage(num).then(function (page) {
+            var viewport = page.getViewport({ scale: scale });
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            // Render PDF page into canvas context
+            var renderContext = {
+                canvasContext: ctx,
+                viewport: viewport
+            };
+            var renderTask = page.render(renderContext);
+
+            // Wait for rendering to finish
+            renderTask.promise.then(function () {
+                pageRendering = false;
+                if (pageNumPending !== null) {
+                    // New page rendering is pending
+                    renderPage(pageNumPending);
+                    pageNumPending = null;
+                }
+            });
+        });
+
+        // Update page counters
+        $('#autoCompInput').val(num);
+    }
+
+    function queueRenderPage(num) {
+        if (pageRendering) {
+            pageNumPending = num;
+        } else {
+            renderPage(num);
+        }
+    }
+
+    function onPrevPage() {
+        if (pageNum <= 1) {
+            return;
+        }
+        pageNum--;
+        queueRenderPage(pageNum);
+    }
+    document.getElementById('prev').addEventListener('click', onPrevPage);
+
+    function onFirstPage() {
+        var pager = 1;
+        pageNum = pager;
+        pageNum--;
+        onNextPage();
+    }
+    function onLastPage() {
+        var pager = pdfDoc.numPages;
+        pageNum = pager;
+        pageNum--;
+        onNextPage();
+    }
+    function onNextPage() {
+        if (pageNum >= pdfDoc.numPages) {
+            return;
+        }
+        pageNum++;
+        queueRenderPage(pageNum);
+    }
+
+    function keypressInBox(e) {
+        var code = (e.keyCode ? e.keyCode : e.which);
+        if (code == 13) { //Enter keycode                        
+            e.preventDefault();
+            var pager = $("#autoCompInput").val();
+            pageNum = pager;
+            pageNum--;
+            onNextPage();
+        }
+    };
+
+    document.getElementById('next').addEventListener('click', onNextPage);
+    document.getElementById('first').addEventListener('click', onFirstPage);
+    document.getElementById('last').addEventListener('click', onLastPage);
+    document.getElementById('rotateLeft').addEventListener('click', rotateLeft);
+    document.getElementById('rotateRight').addEventListener('click', rotateLeft);
+
+    $("#autoCompInput").bind("keypress", {}, keypressInBox);
+
+
+    pdfjsLib.getDocument({ url: url, password: 'Aa292807', }).promise.then(function (pdfDoc_) {
+        pdfDoc = pdfDoc_;
+        document.getElementById('page_count').textContent = pdfDoc.numPages;
+
+        // Initial/first page rendering
+        renderPage(pageNum);
+    });
+
+    $('#rotateLeft').click(function () {
+
+        if ($('#pdf').attr('angle') == 'right') {
+            $('#pdf').css('margin-top', '100px');
+            $('#pdf').css('transform', 'rotate(0deg)');
+            $('#pdf').attr('angle', 'basic')
+        }
+        else {
+            $('#pdf').css('margin-bottom', '200px');
+            $('#pdf').css('margin-top', '200px');
+            $('#pdf').css('transform', 'rotate(-90deg)');
+            $('#pdf').attr('angle', 'left')
+        }
+
+    })
+    $('#rotateRight').click(function () {
+        if ($('#pdf').attr('angle') == 'left') {
+            $('#pdf').css('transform', 'rotate(0deg)');
+            $('#pdf').css('margin-top', '100px');
+            $('#pdf').attr('angle', 'basic')
+        }
+        else {
+            $('#pdf').css('margin-top', '200px');
+            $('#pdf').css('margin-bottom', '200px');
+            $('#pdf').css('transform', 'rotate(90deg)');
+            $('#pdf').attr('angle', 'right')
+        }
+    })
+
+
+</script>
+{% endblock scripts %}

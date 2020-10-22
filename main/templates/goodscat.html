@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Каталог товаров - Альфа | Дзержинск
+{% endblock %}
+
+{% block metatags %}
+<meta name="Description"
+    content="Каталог продукции, изготовление, производство и продажа деталей для судовых и промышленных дизелей. Подшипники скольжения (вкладыши,втулки), резиновые детали, торцевые уплотнения насосов и прокладки" />
+{% endblock %}
+
+{% block links %}
+
+<link rel="stylesheet" href="{% static 'css/moderation.css' %}">
+<link rel="stylesheet" href="{% static 'css/datepicker.min.css' %}">
+{% endblock links %}
+
+{% block content %}
+<div class="container">
+    <div class="breadcrumbs">
+        <a href="/">Главная</a> / Каталог товаров
+    </div>
+</div>
+<div class="container">
+    <h1>Каталог товаров</h1><span class="line"></span>
+
+    <div class="column-wrap goodscat_pad">
+        <div class="filter-list" onclick="open_info(this)">
+            <div class="filter-list__text">
+                <span>Фильтр товаров</span> <i class="fas fa-chevron-down" id="spoiler_ico"></i>
+            </div>
+
+            <div class="filters" id="filters">
+                <ul class="filtres_list">
+                    <li>
+                        <label class="checkbox_custom" id="test">Все товары
+                            <input type="checkbox" class="checkbox_item" id="check_all">
+                            <span class="checkmark"></span>
+                        </label>
+                    </li>
+                    <hr>
+                    <li>
+                        <label class="checkbox_custom" id="test">Подшипники
+                            <input type="checkbox" class="checkbox_item" id="check_1">
+                            <span class="checkmark"></span>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="checkbox_custom">Уплотнение клапанов
+                            <input type="checkbox" class="checkbox_item" id="check_2">
+                            <span class="checkmark"></span>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="checkbox_custom">Компоненты впрыска
+                            <input type="checkbox" class="checkbox_item" id="check_3">
+                            <span class="checkmark"></span>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="checkbox_custom">Торцевые уплотнения
+                            <input type="checkbox" class="checkbox_item" id="check_4">
+                            <span class="checkmark"></span>
+                        </label>
+                    </li>
+                    <li>
+                        <label class="checkbox_custom">Прокладки
+                            <input type="checkbox" class="checkbox_item" id="check_5">
+                            <span class="checkmark"></span>
+                        </label>
+                    </li>
+                </ul>
+                <div class="filters_apply">
+                    <div class="filters__btn" id="apply_filters">
+                        <span>Применить</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="pages-goods">
+            <div class="catalog-goods row-wrap">
+                {% for good in goods %}
+                <a href="/goodscat/{{good.id}}" class="good-item column-wrap">
+                    <div class="good-item-img">
+                        {% if good.img %}
+                        <img src="{{ good.img.url }}" alt="" width="100%">
+                        {% else %}
+                        <img src="{% static 'img/no_image_hor.jpg' %}" width="150px" height="205px">
+                        {% endif %}
+                        <span class="img__hover">Просмотр</span>
+                    </div>
+                    <div class="good-item-name">
+                        {{ good.name }}
+                    </div>
+                    <div class="good-item-mark">
+                        {{ good.mark }}
+                    </div>
+                </a>
+                {% empty %}
+                <h3>Товаров не найдено</h3>
+                {% endfor %}
+            </div>
+            <div class="pagination">
+                <span class="step-links">
+                    {% if  num_pages|length > 1%}
+                        {% if goods.has_previous %}
+                        <a href="?page={{ goods.previous_page_number }}"><i class="flaticon-left-arrow"></i></a>
+                        {% else %}
+                        <div><i class="flaticon-left-arrow"></i></div>
+                        {% endif %}
+                        {% for page in num_pages %}
+                        {% if page ==  goods.number%}
+                        <div class="curr_page">{{page}}</div>
+                        {% else %}
+                        <a href="?page={{page}}" class="num_page">{{page}}</a>
+                        {% endif %}
+                        
+                        {% endfor %}
+                        {% if goods.has_next %}
+                        <a href="?page={{ goods.next_page_number }}"><i class="flaticon-right-arrow"></i></a>
+                        {% else %}
+                        <div><i class="flaticon-right-arrow"></i></div>
+                        {% endif %}
+                    {% else %}
+                    
+                    {% endif %}
+
+                    
+                </span>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    var currentFilters = decodeURI(window.location.pathname.split('/goodscat/')[1])
+    $('.checkbox_item').each(function (item) {
+        var curFilter = this.parentNode.textContent.trim();
+        if (currentFilters.split('+').includes(curFilter)) {
+            $(this).attr('checked', 'checked');
+            $(this).addClass('active_check');
+        }
+    })
+
+    $('.checkbox_item').click(function () {
+        $(this).toggleClass('active_check')
+    })
+    $('#apply_filters').click(function () {
+        var searched = "";
+        var flag = 1;
+        $('.checkbox_item').each(function (item) {
+            if ($(this).hasClass('active_check')) {
+                searched += this.parentNode.textContent.trim() + "+";
+                if ($(this).prop('id') == 'check_all') {
+                    flag = 0;
+                }
+            }
+
+        })
+        if (flag == 0) {
+            window.location.href = '/goodscat';
+        }
+        else {
+            window.location.href = searched;
+        }
+
+    })
+
+    function open_info(div) {
+        var panel = document.getElementById('filters');
+        if (panel.style.display === "block") {
+            panel.style.display = "none";
+
+        } else {
+            panel.style.display = "block";
+        }
+    }
+
+
+</script>
+
+{% endblock scripts %}

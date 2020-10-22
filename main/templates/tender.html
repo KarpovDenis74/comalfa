@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Участие в тендере - Альфа | Дзержинск
+{% endblock %}
+
+{% block metatags %}
+<meta name="Description" content="Информация об участии в тендере." />
+{% endblock %}
+
+{% block links %}
+
+{% endblock links %}
+
+{% block content %}
+<div class="container">
+    <div class="breadcrumbs">
+        <a href="/">Главная</a> / Услуги / Тендер
+    </div>
+</div>
+<div class="container">
+
+    <h1>Тендер</h1><span class="line"></span>
+    <br>
+    <div class="tender-main-block">
+        <form class="form-wrapper" name="submit_tender_form" id="submit_tender_form" action="">
+            <p>Наша компания участвует в  коммерческих и государственных тендерах.<br>
+                Для отправки приглашения на участие , заполните пожалуйста небольшую форму обратной связи .</p>
+            <h2>Участвовать в тендере</h2>
+
+            <input type="name" class="tender_input" name="name" placeholder="Имя" required><br>
+            <input type="email" class="tender_input" name="email" placeholder="Эл. почта" required><br>
+            <textarea name="message" class="tender_input" id="" cols="30" rows="6"
+                placeholder="Добавьте сообщение"></textarea>
+            <div class="submit-btn-wrapper">
+                <button class="tender-btn" type="submit">Отправить</button>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+
+
+
+
+
+{% endblock content %}
+
+{% block scripts %}
+
+<script>
+
+    $('#submit_tender_form').submit(function (e) {
+        e.preventDefault();
+        var fd = new FormData(submit_tender_form);
+
+        fetch("/new_tender_request/", {
+            method: "POST",
+            body: fd
+        }).then(function (response) {
+            return response.json();
+        }).then(function (data) {
+            if (data == 'success') {
+                showPopUp('Ваша заявка на участие в тендере отправлена. Спасибо!')
+            }
+            else {
+                showPopUpError('Ошибка при отправке')
+            }
+            console.log(data);
+        });
+    })
+
+</script>
+
+{% endblock scripts %}

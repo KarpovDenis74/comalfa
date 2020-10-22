@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Металлообработка - Альфа | Дзержинск
+{% endblock %}
+
+{% block metatags %}
+<meta name="Description"
+    content="Оказание спектра услуг по обработке металлов, начиная от серийного изготовления изделий заканчивая производством сборных узлов и механизмов по технической документации заказчика. (обработка металла резанием, термообработка металла, гальваническое покрытие, сборка деталей в узлы)" />
+{% endblock %}
+
+{% block links %}
+
+{% endblock links %}
+
+{% block content %}
+<!-- <div class="container">
+    <div class="breadcrumbs">
+        <a href="/">Главная</a> / <a href="/order">Оформить заказ</a>
+    </div>
+</div> -->
+<div class="order__mob" style="background-image: url({% static 'img/order_back.jpg' %}); margin-top: -17px;">
+
+    <!-- <h1 style="color: white;">Отправить заявку</h1> -->
+    <div class="order-left_side">
+
+    </div>
+    <div class="order-right_side">
+        <form action="" name="submit_order_form" id="submit_order_form">
+            <div class="order-form-wrapper">
+                <div class="order-form-wrapper__left">
+                    <input type="name" name="name" class="order_input" placeholder="Имя" required><br>
+                    <input type="email" name="email" class="order_input" placeholder="Эл. почта" required>
+                </div>
+                <div class="order-form-wrapper__right">
+                    <textarea class="order_input order_textarea" name="message" placeholder="Добавить сообщение" rows="3"></textarea>
+                </div>
+
+            </div>
+            <div class="order-form-wrapper-submit">
+                <button class="tender-btn" id="order_sbm">Отправить</button>
+            </div>
+        </form>
+
+    </div>
+
+
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    $('#submit_order_form').submit(function (e) {
+        e.preventDefault();
+        var fd = new FormData(submit_order_form);
+
+        fetch("/new_order_request/", {
+            method: "POST",
+            body: fd
+        }).then(function (response) {
+            return response.json();
+        }).then(function (data) {
+            if (data == 'success') {
+                showPopUp('Ваш заказ принят в обработку')
+            }
+            else {
+                showPopUpError('Ошибка при отправке')
+            }
+            console.log(data);
+        });
+    })
+</script>
+
+
+{% endblock scripts %}

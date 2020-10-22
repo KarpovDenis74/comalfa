@@ -1,0 +1,288 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Альфа | Дзержинск - Разработка и поставка деталей машиностроения
+{% endblock %}
+
+{% block metatags %}
+<meta name="Description"
+    content="Разработчик и поставщик компонентов машиностроения. Детали двигателей :подшипники скольжения (вкладыши,втулки ), резиновые детали, торцевые уплотнения насосов и прокладки" />
+{% endblock %}
+
+{% block links %}
+
+<link rel="stylesheet" href="{% static 'css/moderation.css' %}">
+<link rel="stylesheet" href="{% static 'css/datepicker.min.css' %}">
+{% endblock links %}
+
+{% block content %}
+<div class="container">
+    <div class="breadcrumbs">
+        <a href="/">Главная</a> / <a href="/goodscat">Каталог товаров</a> / {{ good.name }} {{ good.mark }}
+    </div>
+</div>
+<div class="container">
+    <h1 class="good-card__maintitle" style="font-size: 32px;">{{ good.name }} {{ good.mark }}</h1><span
+        class="line"></span>
+    <div class="good-card row-wrap">
+        <div class="good-card__image">
+            <img src="{{ good.img.url }}" alt="" width="100%">
+        </div>
+        <div class="good-card-info">
+            <div class="good-card-info-category">
+                <div class="good-card-info-category-left" style="width: 40%;">
+                    <div class="good-card-info-price">
+                        {% if good.price %}
+                        {{good.price}}.00 р.
+                        {% else %}
+                        -
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="good-card-info-category-right tocart_btn ">
+                    <div class="good-card-info__text good-card-btn" style="text-align: right;">
+                        <div class="com-btn" id="order_btn">
+                            <span>Добавить в корзину</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="good-card-info-category">
+                <div class="good-card-info-category-left category_text__bold">
+                    Наличие
+                </div>
+                <div class="good-card-info-category-right category__text">
+                    {% if good.quantity %}
+                    {% if good.quantity == 0 %}
+                    <span style="color: rgb(133, 133, 133); font-weight: bold;">Нет в наличии(0)</span>
+                    {% else %}
+
+                    <span style="color: rgb(133, 133, 133); font-weight: bold;">есть в наличии({{good.quantity}})</span>
+                    {% endif %}
+                    {% else %}
+                    <span style="color: rgb(133, 133, 133); font-weight: bold;">Нет в наличии(0)</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="good-card-info-category">
+                <div class="good-card-info-category-left category_text__bold">
+                    Тип
+                </div>
+                <div class="good-card-info-category-right category__text">
+                    {{good.type}}
+                </div>
+            </div>
+            <div class="good-card-info-category">
+                <div class="good-card-info-category-left category_text__bold">
+                    Материал
+                </div>
+                <div class="good-card-info-category-right category__text">
+                    {{good.material}}
+                </div>
+            </div>
+            <div class="good-card-info-category">
+                <div class="good-card-info-category-left category_text__bold">
+                    Аналоги
+                </div>
+                <div class="good-card-info-category-right category__text">
+                    {{good.analog}}
+                </div>
+            </div>
+            <div class="good-card-info-category">
+                <div class="good-card-info-category-left category_text__bold">
+                    Вес, кг
+                </div>
+                <div class="good-card-info-category-right category__text">
+                    {{good.weight}}
+                </div>
+            </div>
+            <div class="good-card-info-category">
+                <div class="good-card-info-category-left category_text__bold">
+                    Размер, мм
+                </div>
+                <div class="good-card-info-category-right category__text">
+                    {{good.length}}
+                </div>
+            </div>
+            <div class="good-card-info-category">
+                <div class="good-card-info-category-left category_text__bold">
+                    Применение
+                </div>
+                <div class="good-card-info-category-right category__text">
+
+                    {% for item in using %}
+                    {% for key, value in item.items %}
+                    {% if value != '' %}
+                    <a href="{{value}}">{{key}}</a>,
+                    {% else %}
+                    {% if key == key|last %}
+                    {{key}}
+                    {% else %}
+                    {{key}},
+                    {% endif %}
+                    {% endif %}
+                    {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="good-card-info-category">
+                <div class="good-card-info-category-left category_text__bold">
+                    Каталоги деталей
+                </div>
+                <div class="good-card-info-category-right category__text">
+                    {% for item in catalogs %}
+                    {% for key, value in item.items %}
+                    {% if value != '' %}
+                    <a href="{{value}}">{{key}}</a>,
+                    {% else %}
+                    {% if key == key|last %}
+                    {{key}}
+                    {% else %}
+                    {{key}},
+                    {% endif %}
+                    {% endif %}
+                    {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="good-card-info-category">
+                <div class="good-card-info-category-left category_text__bold">
+                    Технический каталог
+                </div>
+                <div class="good-card-info-category-right category__text">
+                    <a href="/category/">Технический каталог</a>
+                </div>
+            </div>
+            <div class="good-card-info-category">
+                <div class="good-card-info-category-left category_text__bold">
+                    Кол-во в упаковке
+                </div>
+                <div class="good-card-info-category-right category__text">
+                    {{good.quantity_pack}}
+                </div>
+            </div>
+            <div class="good-card-info-category">
+                <div class="good-card-info-category-left category_text__bold">
+                    Изготовитель
+                </div>
+                <div class="good-card-info-category-right category__text">
+                    {{good.manufactur}}
+                </div>
+            </div>
+            <div class="good-card-spoiler" onclick="openText(this)">
+                <span class="category_text__bold">Состав комплекта</span>
+                <i class="fas fa-chevron-down""></i>
+            </div>
+
+            <div class=" spoiler-info">
+                    {{good.package}}
+            </div>
+            <div class="good-card-spoiler" onclick="openText(this)">
+                <span class="category_text__bold">Примечание</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+
+            <div class="spoiler-info">
+                {{good.note}}
+            </div>
+        </div>
+    </div>
+</div>
+<div id="order-form__modal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+        <h1>Отправить запрос</h1>
+        <form name="addNewPost" id="addNewPost">
+            <div class="order-goods-wrapper">
+                <div class="order-goods-list">
+                    {% for ogood in ordergoods %}
+
+                    <div class="order-good-item">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="order_good_check_{{ ogood.id }}">
+                            <label class="form-check-label" for="order_good_check_{{ ogood.id }}">{{ogood.name}}
+                                {{ogood.mark}}</label>
+
+                        </div>
+                        <input class="quantity_selector" id="order_good_quantity_{{ ogood.id }}" type="text"
+                            style="width: 50px;">
+                    </div>
+
+                    <br>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="title" class="col-sm-2 col-form-label">Имя</label>
+                <div class="col-sm-10">
+                    <input type="text" name="title" class="form-control" id="title" placeholder="Имя" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="title" class="col-sm-2 col-form-label">Электронная почта</label>
+                <div class="col-sm-10">
+                    <input type="text" name="title" class="form-control" id="title" placeholder="Электронная почта"
+                        required>
+                </div>
+            </div>
+
+
+            <div class="modal-btns">
+                <div class="back-btn" id="modal-back">
+                    <span>Назад</span>
+                </div>
+                <div class="save-btn" id="modal-save">
+                    <span>Отправить</span>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    // var add_post_modal = document.getElementById("order-form__modal");
+    // var modal_back = document.getElementById("modal-back");
+
+    // var add_post_btn = document.getElementById('order_btn');
+
+    // add_post_btn.onclick = function () {
+    //     add_post_modal.style.display = "block";
+    // }
+
+    // modal_back.onclick = function () {
+    //     add_post_modal.style.display = "none";
+    // }
+
+    // window.onclick = function (event) {
+    //     if (event.target == add_post_modal) {
+    //         add_post_modal.style.display = "none";
+    //     }
+    // }
+
+    $('#order_btn').click(function () {
+        console.log('{{good.id}}');
+        fetch('/addtocart/' + '{{good.id}}', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                console.log(responseJson);
+                updateCountCart();
+                showPopUp('Товар добавлен в корзину')
+
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    });
+</script>
+{% endblock scripts %}

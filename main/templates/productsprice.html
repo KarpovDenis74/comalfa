@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Цена на продукцию - Альфа | Дзержинск
+{% endblock %}
+
+{% block metatags %}
+<meta name="Description"
+    content="Ознакомиться с ценами на детали для двигателей :подшипники скольжения (вкладыши,втулки ), резиновые детали, торцевые уплотнения насосов и прокладки" />
+{% endblock %}
+
+{% block links %}
+
+{% endblock links %}
+
+{% block content %}
+
+<div class="container">
+
+    <h1>Продукция прайс</h1><span class="line" style="width: 800px;"></span>
+
+    <br>
+    <div class="table-overflow__wrapper">
+        <table class="table table-hover table-sm">
+            <thead>
+                <tr>
+                    <th scope="col" style="width: 35%;">Товар</th>
+                    <th scope="col" style="width: 20%; text-align: center;">Применяемость</th>
+                    <th scope="col" style="width: 15%; text-align: center;">Группа</th>
+                    <th scope="col" style="width: 15%; text-align: center;">Изготовитель</th>
+                    <th scope="col" style="width: 15%; text-align: center;">Цена без НДС</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in perspective %}
+                <tr>
+                    <td>{{ item.name }} {{item.mark}}</td>
+                    <td style="text-align: center;">
+                        {% for use in item.usingUrl %}
+                        {% for key, value in use.items %}
+                        {% if value != '' %}
+                        <a href="{{value}}">{{key}}</a>,
+                        {% else %}
+                        {% if key == key|last %}
+                        {{key}}
+                        {% else %}
+                        {{key}},
+                        {% endif %}
+                        {% endif %}
+                        {% endfor %}
+                        {% endfor %}</td>
+                    <td style="text-align: center;">{{ item.type }}</td>
+                    <td style="text-align: center;">{{ item.manufactur }}</td>
+                    <td style="text-align: center;">{{ item.price }} руб</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+
+
+{% endblock scripts %}

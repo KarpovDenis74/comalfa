@@ -1,0 +1,729 @@
+{% extends "base.html" %} {% load static index %} {% block title %} Каталоги деталей двигателя {{curr_engine.name}},
+деталь {{ curr_unit.name }} Альфа | Дзержинск - Разработка и поставка деталей
+машиностроения {% endblock %} {% block metatags %}
+<meta name="Description"
+    content="Разработчик и поставщик компонентов машиностроения. Детали двигателей :подшипники скольжения (вкладыши,втулки ), резиновые детали, торцевые уплотнения насосов и прокладки" />
+{% endblock %} {% block links %} {% endblock links %} {% block content %} {% load index %}
+<div class="container">
+    <div class="breadcrumbs">
+        <a href="/">Главная</a> / Информация / <a href="/category">Каталоги деталей</a> / {{curr_engine.name}}
+    </div>
+</div>
+<div class="container">
+    {% if user.is_superuser and curr_unit %}
+    <br>
+    <div class="moder-refresh">
+        <h2>Загрузить изображение для "{{ curr_unit.name }}"</h2>
+        <label for="isMap">Нужна разметка</label>
+        <input style="vertical-align: middle;" id="isMap" type="checkbox" checked="checked" />
+        <br>
+        <label for="isnewImg">Новое изображение</label>
+        <input style="vertical-align: middle;" id="isnewImg" type="checkbox" checked="checked" />
+        <form name="uploadimg" method="post" action="" enctype="multipart/form-data"> {% csrf_token %}
+            <input type="file" name="file" required>
+            <button type="button" class="btn btn-outline-success" id="refresh">Обновить</button>
+        </form>
+    </div>
+    <br>
+    <div class="moder-refresh">
+        <h2>Редактирование данных каталога</h2>
+        <label for="changeSort">Сортировать детали</label>
+        <input style="vertical-align: middle;" id="changeSort" type="checkbox" onclick="changeSort()" />
+        <br>
+        <label for="editParts">Редактировать части деталей</label>
+        <input style="vertical-align: middle;" id="editParts" type="checkbox" onclick="editParts()" />
+        <form name="uploadInfo" method="post" action="" enctype="multipart/form-data"> {% csrf_token %}
+            <button type="button" class="btn btn-outline-success" id="sendData">Обновить</button>
+        </form>
+    </div>
+    {% endif %}
+    <h1>{{curr_engine.name}}</h1><span class="line"></span>
+    <div class="unit-info">
+        <div class="unit-parts-menu">
+            <!-- <ul class="units__list">
+                {% for unit in units %}
+                <li class="unit_item inSort {% if curr_unit.id == unit.id %} active_unit-item {% endif %}"
+                    unit_id='{{ unit.id }}'>{% if curr_unit.id == unit.id %} {{unit.name}} {% else %}
+                    <a href="/category/{{curr_engine.id}}/units/{{ unit.id }}">{{unit.name}}</a> {% endif %}</li>
+                {% endfor %}
+            </ul> -->
+            <div class="units__list">
+                {% for unit in units %}
+                <a class="unit_item {% if curr_unit.id == unit.id %} active_unit-item {% endif %}"
+                    unit_id='{{ unit.id }}' {% if curr_unit.id == unit.id %} {% else %}
+                    href="/category/{{curr_engine.id}}/units/{{ unit.id }}" {% endif %}>{{unit.name}} </a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="unit-img__wrapper">
+            <div id="unit-img" class="unit-img">
+                {% if curr_unit.img %}
+                <img id="mapping_img" draggable="false" style="transition: all 0.5s ease 0s;" class="img-img"
+                    src="{{curr_unit.img.url}}" alt="" usemap="#img_map">
+                {% else %}
+                <img class="img-no_image" src="{% static 'img/no_image_hor.jpg' %}" alt="" usemap="#img_map">
+                {% endif %}
+
+                <map name="img_map" id="map_test">
+                    {% if curr_unit.HTML_markup %}
+                    {% autoescape off %}
+                    {{ curr_unit.HTML_markup }}
+                    {% endautoescape %}
+                    {% else %}
+                    {% endif %}
+                </map>
+            </div>
+            {% if curr_unit.img %}
+            <div class="img_scale">
+                <i id="scale-plus" onclick="scale_edit(event, false)" class="fa fa-plus scale_edit"
+                    aria-hidden="true"></i>
+                <input id="scale-index" class="scale-index" oninput="scale_change(false)" value="100%" />
+                <i id="scale-minus" onclick="scale_edit(event, false)" class="fa fa-minus scale_edit"
+                    aria-hidden="true"></i>
+                <i style="padding: 5px 0" class="far fa-window-close scale_edit" id="scale-cancel"></i>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="parts-block">
+        <div class="table-overflow__wrapper">
+            <table class="table table-hover table-sm category_table">
+                <thead>
+                    <tr>
+                        <th scope="col">№</th>
+                        <th scope="col" style="width: 20%;">Наименование</th>
+                        <th scope="col" style="width: 30%;">Маркировка</th>
+                        <th scope="col" style="width: 20%;">Сборочная единица</th>
+                        <th scope="col" style="width: 5%;text-align: center;">Кол-во деталей</th>
+                        <th scope="col" style="width: 5%; text-align: center;">Кол-во на двигатель</th>
+                        <th scope="col" style="width: 15%;text-align: center;">Примечание</th>
+                        <th scope="col" style="width: 5%;text-align: center;">Ссылка</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for part in parts %}
+                    <tr class="part_element" part-id="{{part.id}}" mark-len="{{part.mark|length}}"
+                        id="line{{forloop.counter}}">
+
+                        <th class="th_el"
+                            rowspan="{% if part.mark|length <= 1 %} 1 {% else %} {{ part.mark|length }} {% endif %}"
+                            scope="row">
+                            {{forloop.counter}}
+                            {% if user.is_superuser and curr_unit %}
+                            <div class="editrow__icon">
+                                <i class="far fa-edit" part-id="{{part.id}}"></i>
+                            </div>
+                            <div class="saverow__icon">
+                                <i class="far fa-save" part-id="{{part.id}}"></i>
+                            </div>
+                            <div class="admin_url_row__icon">
+                                <a href="/admin/main/parts/{{part.id}}/change/"><i class="fas fa-user-cog"></i></a>
+                            </div>
+                            {% endif %}
+                        </th>
+                        <td rowspan="{% if part.mark|length <= 1 %} 1 {% else %} {{ part.mark|length }} {% endif %}">
+                            <!-- <a href="/category/{{curr_engine.id}}/{{curr_unit.id}}/part/{{part.id}}">
+                                <span class="defaultrow__text">{{part.name}}</span>
+
+                            </a> -->
+                            <span class="defaultrow__text">{{part.name}}</span>
+                            <input type="text" class="editrow__input" value="{{part.name}}">
+                        </td>
+                        <td>
+                            <span class="defaultrow__text">{{part.mark|first}}</span>
+                            <!-- <textarea rows="{{ part.mark|length }}" class="editrow__input">{{part.mark}}</textarea> -->
+                            <textarea rows="8" class="editrow__input">{%for mark in part.mark %}{{mark}}{% if not forloop.last %}&#13;&#10;{% endif %}{% endfor %}</textarea>
+                        </td>
+                        <td>
+                            <span class="defaultrow__text">{{part.unit|first}}</span>
+                            <textarea rows="8" class="editrow__input">{%for unit in part.unit %}{{unit}}{% if not forloop.last %}&#13;&#10;{% endif %}{% endfor %}</textarea>
+                        </td>
+                        <td style="text-align: center;">
+                            <span class="defaultrow__text">{{part.quantity_unit|first}}</span>
+                            <textarea rows="8"
+                                class="editrow__input">{%for quantity in part.quantity_unit %}{{quantity}}{% if not forloop.last %}&#13;&#10;{% endif %}{% endfor %}</textarea>
+                        </td>
+                        <td rowspan="{% if part.mark|length <= 1 %} 1 {% else %} {{ part.mark|length }} {% endif %}"
+                            style="text-align: center;">
+                            <span class="defaultrow__text">{{part.quantity}}</span>
+                            <input type="text" class="editrow__input" value="{{part.quantity}}">
+                        </td>
+                        <td rowspan="{% if part.mark|length <= 1 %} 1 {% else %} {{ part.mark|length }} {% endif %}">
+                            {% if part.notes == 'None' %}<span
+                            class="defaultrow__text"></span> {% else %} <span
+                                class="defaultrow__text">{{part.notes}}</span> {% endif %}
+                            <input type="text" class="editrow__input" value="{{part.notes}}">
+                        </td>
+                        <td rowspan="{% if part.mark|length <= 1 %} 1 {% else %} {{ part.mark|length }} {% endif %}"
+                            style="text-align: center;">
+                            <span class="defaultrow__text">{{part.url}}</span>
+                            <input type="text" class="editrow__input" value="{{part.url}}">
+                        </td>
+                    </tr>
+
+                    {% for item in part.length_mark %}
+                    <tr class="part_element_nextMark" part-id="{{part.id}}">
+                        <td>
+                            <span class="defaultrow__text">{{part.mark|index:item}}</span>
+                        </td>
+                        <td>
+                            <span class="defaultrow__text">{{part.unit|index:item}}</span>
+                        </td>
+                        <td style="text-align: center;">
+                            <span class="defaultrow__text">{{part.quantity_unit|index:item}}</span>
+                        </td>
+                    </tr>
+                    {% endfor %} {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+{% if user.is_superuser and curr_unit %}
+<div data-ng-app="Popup" data-ng-controller="PopupController" id="popup" class="popup-container hide">
+    <div class="popup-shadow"></div>
+    <div class="popup-wrapper">
+        <div class="popup">
+            <div class="popup-image__wrapper column">
+                <div class="popup-title">
+                    Разметка позиций на изображении
+                    <i data-ng-click="closepopup()"
+                        style="font-size: 50px;cursor:pointer;position: absolute;top: 10px;right: 10px;"
+                        class="far fa-times-circle popup-close "></i>
+                </div>
+                <div class="popup-image">
+                    <img id="popupImg" src="/static/img/no_image_hor.jpg" alt="" />
+                    <canvas data-ng-init="inc=0; isDraw=false;parts=[];" data-ng-click="getCoords($event);addItem();"
+                        id="popupCanvas" style="position:absolute; top:0; left:0;" width="602" , height="502"></canvas>
+                </div>
+                <div class="img_scale">
+                    <i id="scale-plus_popupImg" onclick="scale_edit(event, 'popupImg')" class="fa fa-plus scale_edit"
+                        aria-hidden="true"></i>
+                    <input id="scale-index_popupImg" class="scale-index" oninput="scale_change('popupImg')"
+                        value="100%" />
+                    <i id="scale-minus_popupImg" onclick="scale_edit(event, 'popupImg')" class="fa fa-minus scale_edit"
+                        aria-hidden="true"></i>
+                    <i style="padding: 5px 0" class="far fa-window-close scale_edit" id="scale-cancel_popupImg"></i>
+                </div>
+                <div class="popup-image__title">{{ curr_unit.name }}</div>
+            </div>
+            <div class="popup-table__wrapper">
+                <div class="table-title">
+                    <div style="flex-basis: 5%;" class="table-title__item"></div>
+                    <div style="flex-basis: 5%;" class="table-title__item">№</div>
+                    <div style="flex-basis: 30%;" class="table-title__item">Наименование</div>
+                    <div style="flex-basis: 25%;" class="table-title__item">Цифра на картинке</div>
+                    <div style="flex-basis: 35%; text-align: end; margin-right: 50px;" class="table-title__item">Удалить
+                    </div>
+                </div>
+                <div id="popupTable" class="popup-table"></div>
+                <div class="popup-btn__wrapper">
+                    <div data-ng-click="saveCoords()" class="popup-btn">Сохранить</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %} {% endblock content %} {% block scripts %} {{block.super}} {% if user.is_superuser and curr_unit %}
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular.min.js"></script>
+<script src="https://code.angularjs.org/1.8.0/angular-sanitize.min.js"></script>
+<script>
+    var imagelink = "";
+
+    function getCookie(name) {
+        var cookie = " " + document.cookie;
+        var search = " " + name + "=";
+        var setStr = null;
+        var offset = 0;
+        var end = 0;
+        if (cookie.length > 0) {
+            offset = cookie.indexOf(search);
+            if (offset != -1) {
+                offset += search.length;
+                end = cookie.indexOf(";", offset)
+                if (end == -1) {
+                    end = cookie.length;
+                }
+                setStr = unescape(cookie.substring(offset, end));
+            }
+        }
+        return (setStr);
+    }
+    $('#refresh').click(function () {
+        if (document.getElementById('isnewImg').checked) {
+            let fd = new FormData(uploadimg);
+            let url = "/new/upload_img/"
+            fetch(url, {
+                method: "POST",
+                body: fd
+            }).then(function (response) {
+                return response.json();
+            }).then(function (data) {
+                imagelink = data.image
+                if (document.getElementById('isMap').checked) {
+                    document.getElementById('popup').classList.remove('hide')
+                    document.getElementById('popupImg').src = imagelink
+                } else {
+                    url = "/update_units/"
+                    data = {
+                        'img': imagelink,
+                        'map': null,
+                        'id': `{{curr_unit.id}}`,
+                    }
+                    fetch(url, {
+                        method: "POST",
+                        body: JSON.stringify(data),
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken'),
+                            'Content-Type': 'application/json'
+                        },
+                    }).then(function (data) {
+                        location.reload()
+                    })
+                }
+            });
+        } else {
+            "{% if curr_unit.img %}"
+            if (document.getElementById('isMap').checked) {
+                document.getElementById('popup').classList.remove('hide')
+                document.getElementById('popupImg').src = `{% getUnitImg curr_unit %}`
+            }
+            "{% else %}"
+            alert('Сначала добавьте изображение')
+            "{% endif %}"
+        }
+    })
+</script>
+<script>
+    var app = angular.module('Popup', ['ngSanitize']);
+    app.controller('PopupController', ['$scope', '$timeout', '$compile', '$sce', '$http',
+
+        function ($scope, $timeout, $compile, $sce, $http) {
+            function ajax(url, data) {
+                var req = {
+                    method: 'POST',
+                    url: url,
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'Content-Type': 'application/json'
+                    },
+                    data: JSON.stringify(data)
+                };
+                $http(req).then(function (response) {
+                    if (response.status == 200) {
+                        location.reload()
+                    }
+
+                });
+            }
+
+            function getTableRow(inc, part) {
+                part = part ? part : '—'
+                let tableRow = '<div id="tablerow' + inc + '" class="table-row">\
+                        <div style="flex-basis: 5%" class="table-row__item"></div>\
+                        <div style="flex-basis: 5%" class="table-row__item">' + inc + '</div>\
+                        <div id="photopart' + inc + '" style="flex-basis: 30%" class="table-row__item">' + part + '</div>\
+                        <div style="flex-basis: 25%;" class="table-row__item">\
+                            <input id="photonum' + inc + '" style="width: 30px; text-align: center;" type="text" data-ng-focus="event=$event" data-ng-change="photonumChange(event)" data-ng-model="input' + inc + '" ng-value="' + inc + '""></input>\
+                        </div>\
+                        <div style="flex-basis: 35%; text-align: end; margin-right:50px;" class="table-title__item">\
+                            <i data-ng-click="eraseItem(' + inc + ')" style="font-size:24px; cursor:pointer;" class="far fa-times-circle item-delete"></i>\
+                        </div>\
+                    </div>'
+                return tableRow
+            }
+            let result = [{}]
+            let coords = []
+            let tobd = "";
+            var temp = []
+            let canvas = document.getElementById('popupCanvas');
+            let ctx = canvas.getContext('2d');
+            $scope.getCoords = function (e) {
+                let x = Math.floor(e.offsetX == undefined ? e.layerX : e.offsetX)
+                let y = Math.floor(e.offsetY == undefined ? e.layerY : e.offsetY)
+                $scope.inc = $scope.inc + 1;
+                if (!$scope.isDraw) {
+                    "{% for part in parts %}"
+                    $scope.parts.push(`{{ part }}`)
+                    "{% endfor%}"
+                    $scope.isDraw = true;
+                }
+                draw(x, y)
+            }
+
+            function draw(x, y, id = $scope.inc, flag = false) {
+                if (x) {
+                    var ctx = canvas.getContext('2d');
+                    ctx.beginPath();
+                    ctx.lineWidth = "1";
+                    ctx.strokeStyle = "orange";
+                    ctx.moveTo(x - 8, y + 8);
+                    ctx.lineTo(x - 8, y - 8);
+                    ctx.lineTo(x + 8, y - 8);
+                    ctx.lineTo(x + 8, y + 8);
+                    ctx.lineTo(x - 8, y + 8);
+                    ctx.moveTo(x + 8, y - 8)
+                    ctx.lineTo(x + 14, y - 14);
+                    ctx.stroke();
+                    ctx.strokeStyle = "red";
+                    ctx.strokeText(id, x + 15, y - 15);
+                    if (!flag) {
+                        coords[$scope.inc] = `${x - 8},${y - 8},${x + 8},${y + 8}`
+                        temp.push({
+                            'x': x,
+                            'y': y,
+                            'id': $scope.inc
+                        })
+                    }
+                }
+
+            }
+            $scope.addItem = function () {
+                $('#popupTable').append($compile(getTableRow($scope.inc, $scope.parts[$scope.inc - 1]))($scope));
+                $scope["input" + $scope.inc] = $scope.inc
+            }
+            $scope.saveCoords = function () {
+                let i = 1
+                while (i <= $scope.inc) {
+                    if (coords[i]) {
+                        result[i] = {
+                            'number': $scope.inc,
+                            'coords': `${coords[i]}`,
+                            'photonumber': document.getElementById('photonum' + i).value
+                        }
+                        tobd = tobd + `<area shape='rect' coords='${result[i].coords}' href='#line${result[i].photonumber}' onclick='showHide("#line${result[i].photonumber}");' alt=' '>`
+                    }
+                    i += 1
+                }
+                let req = {
+                    'img': imagelink,
+                    'map': tobd,
+                    'id': "{{curr_unit.id}}"
+                }
+                ajax('/update_units/', req)
+            }
+            $scope.eraseItem = function (id) {
+                ctx.clearRect(0, 0, 602, 502)
+                temp[id - 1] = {
+                    'x': '',
+                    'y': '',
+                    'id': ''
+                }
+                coords[id] = ''
+                temp.forEach(function (element, index, temp) {
+                    draw(element["x"], element['y'], element['id'], true)
+                });
+                $('#tablerow' + id).remove()
+            }
+            $scope.closepopup = function () {
+                document.getElementById('popup').classList.add('hide')
+            }
+            $scope.photonumChange = function ($event) {
+
+                if ($scope.parts[$('#' + $event.currentTarget.id)[0].value - 1]) {
+                    $('#photopart' + $event.currentTarget.defaultValue).text($scope.parts[$('#' + $event.currentTarget.id)[0].value - 1])
+                } else if ($('#' + $event.currentTarget.id)[0].value == '') {
+                    $('#photopart' + $event.currentTarget.defaultValue).text('')
+                } else {
+                    alert("В базе данных нет записи под номером " + $('#' + $event.currentTarget.id)[0].value)
+                    $('#photopart' + $event.currentTarget.defaultValue).text('')
+                }
+            }
+        }
+    ])
+</script>
+{% endif %}
+<script>
+    let imgx, imgy;
+    let newimgx = 0;
+    let newimgy = 0;
+    let imgtrans;
+    let flag = 0;
+    function scale_change(id) {
+        inputId = (id) ? 'scale-index_' + id : 'scale-index'
+        let scale_input = document.getElementById(inputId)
+        scale_index = scale_input.value.replace(/[^+\d]/g, '')
+        if (scale_index == '') {
+            scale_index = '0'
+        }
+        scale(scale_index, id)
+        scale_index += '%'
+        scale_input.value = scale_index
+    }
+    function scale_edit($event, id) {
+
+        inputId = (id) ? 'scale-index_' + id : 'scale-index'
+
+        let scale_input = document.getElementById(inputId)
+        scale_index = scale_input.value.replace(/[^+\d]/g, '')
+        targetIdplus = (id) ? 'scale-plus_' + id : 'scale-plus'
+        targetIdminus = (id) ? 'scale-minus_' + id : 'scale-minus'
+        if ($event.target.id == targetIdplus) {
+            scale_index = parseInt(scale_index, 10) + 10
+        } else if ($event.target.id == targetIdminus && scale_index >= 10) {
+            scale_index = parseInt(scale_index, 10) - 10
+        }
+        scale(scale_index, id)
+        scale_index += '%'
+        scale_input.value = scale_index
+    }
+    function scale(scale_index, id) {
+        imgId = (id) ? 'popupImg' : 'mapping_img'
+        let img = document.getElementById(imgId)
+        if (id) {
+            let calcScalex = 0;
+            let calcScaley = 0;
+            calcScalex = (602 * (scale_index / 100) - 602) / 2
+            calcScaley = (502 * (scale_index / 100) - 502) / 2
+            document.getElementById('popupCanvas').style.transform = `matrix(${scale_index / 100}, 0, 0, ${scale_index / 100}, ${calcScalex}, ${calcScaley})`
+            img.style.transform = `matrix(${scale_index / 100}, 0, 0, ${scale_index / 100}, ${calcScalex}, ${calcScaley})`
+        } else {
+            img.style.transform = `matrix(${scale_index / 100}, 0, 0, ${scale_index / 100}, ${newimgx}, ${newimgy})`
+        }
+    }
+
+    function moveImg2(e) {
+        if (flag) {
+            let img = document.getElementById('mapping_img')
+            img.style.cursor = 'default'
+            document.getElementById('unit-img').removeEventListener(`mouseup`, moveImg2);
+            document.getElementById('unit-img').removeEventListener(`mousemove`, moveImg3);
+            img.style.transition = imgtrans
+            let x = window.event.clientX
+            let y = window.event.clientY
+            newimgx = x - imgx + newimgx
+            newimgy = y - imgy + newimgy
+            flag = 0;
+        }
+    }
+    function moveImg3(e) {
+        if (flag) {
+            let img = document.getElementById('mapping_img')
+            let x = window.event.clientX
+            let y = window.event.clientY
+            scale_index = document.getElementById('scale-index').value.replace(/[^+\d]/g, '')
+            img.style.transform = `matrix(${scale_index / 100}, 0, 0, ${scale_index / 100}, ${x - imgx + newimgx}, ${y - imgy + newimgy})`
+        }
+    }
+    document.getElementById('unit-img').addEventListener(`mousedown`, function moveImg(e) {
+
+        let img = document.getElementById('mapping_img')
+        imgx = window.event.clientX
+        imgy = window.event.clientY
+
+        img.style.cursor = 'move'
+        imgtrans = img.style.transition
+        img.style.transition = ''
+        document.getElementById('unit-img').addEventListener(`mouseup`, moveImg2);
+        document.getElementById('unit-img').addEventListener(`mousemove`, moveImg3);
+        flag = 1;
+
+    });
+    document.getElementById('unit-img').addEventListener(`mouseout`, moveImg2);
+    $('#scale-cancel').click(function () {
+        imgx = 0;
+        imgy = 0
+        newimgx = 0;
+        newimgy = 0;
+        imgtrans;
+        flag = 0;
+        let img = document.getElementById('mapping_img')
+        img.style.transform = ''
+        document.getElementById('scale-index').value = '100%'
+
+    })
+    $('#scale-cancel_popupImg').click(function () {
+        let img = document.getElementById('popupImg')
+        img.style.transform = ''
+        document.getElementById('popupCanvas').style.transform = ''
+        document.getElementById('scale-index_popupImg').value = '100%'
+    })
+
+</script>
+<script>
+    var unitsListElement = document.querySelector('.units__list')
+    var unitElements = document.querySelectorAll('.unit_item');
+    var partElement = document.querySelectorAll('.part_element')
+    var editedPartsList = []
+
+
+    function showHide(el) {
+        $('.part_element').each(function () {
+            $(this).css('background-color', 'white');
+        })
+        $(el).css('background-color', 'rgba(253,175,22,0.3)');
+        // setTimeout(function () {
+        //     $(el).css('background-color', 'white');
+        // }, 1000);
+    }
+
+
+
+    $('#map_test').click(function () {
+        console.log(window.location.hash);
+    });
+
+    function f_dragstart(evt) {
+        evt.target.classList.add(`selected`);
+    }
+    function f_dragend(evt) {
+        evt.target.classList.remove(`selected`);
+    }
+    function f_dragover(evt) {
+        evt.preventDefault();
+
+        const activeElement = unitsListElement.querySelector(`.selected`);
+        const currentElement = evt.target;
+        const isMoveable = activeElement !== currentElement &&
+            currentElement.classList.contains(`unit_item`);
+        if (!isMoveable) {
+            return;
+        }
+
+        const nextElement = (currentElement === activeElement.nextElementSibling) ?
+            currentElement.nextElementSibling :
+            currentElement;
+
+        unitsListElement.insertBefore(activeElement, nextElement);
+    }
+    function changeSort() {
+        var cb = document.getElementById('changeSort');
+
+        if (cb.checked == true) {
+            for (const unit of unitElements) {
+                unit.draggable = true;
+                unit.classList.add('inSort');
+            }
+            unitsListElement.addEventListener(`dragstart`, f_dragstart);
+            unitsListElement.addEventListener(`dragend`, f_dragend);
+            unitsListElement.addEventListener(`dragover`, f_dragover);
+
+
+        }
+        else {
+            for (const unit of unitElements) {
+                unit.draggable = false;
+                unit.classList.remove('inSort');
+            }
+            unitsListElement.removeEventListener(`dragstart`, f_dragstart);
+            unitsListElement.removeEventListener(`dragend`, f_dragend);
+            unitsListElement.removeEventListener(`dragover`, f_dragover);
+        }
+    }
+    $('#sendData').click(function () {
+        var unitSortList = []
+        var unitElementsRefreshed = document.querySelectorAll('.unit_item');
+        var count = 0;
+        for (const unit of unitElementsRefreshed) {
+            unitSortList.push({
+                'unit_id': unit.getAttribute('unit_id'),
+                'sort_id': count
+            })
+            count += 1;
+        }
+
+        var myData = {};
+        myData.sort = unitSortList;
+        myData.parts = editedPartsList;
+        console.log(myData)
+        var data = new FormData();
+        data.append("json", JSON.stringify(myData));
+
+        fetch('/update_parts_info/', {
+            method: "POST",
+            body: data
+        }).then(function (response) {
+
+            return response.json();
+        }).then(function (data) {
+            showPopUp('Данные обновлены')
+            return data;
+        });
+    })
+    function editParts() {
+        var cb = document.getElementById('editParts');
+
+        if (cb.checked == true) {
+            $('.editrow__icon').css('display', 'block')
+            $('.saverow__icon').css('display', 'block')
+            $('.admin_url_row__icon').css('display', 'block')
+            for (const part of partElement) {
+
+            }
+        }
+        else {
+            $('.editrow__icon').css('display', 'none')
+            $('.saverow__icon').css('display', 'none')
+            $('.admin_url_row__icon').css('display', 'none')
+        }
+    }
+    $('.editrow__icon').click(function (e) {
+        var partRow = e.target.parentElement.parentElement.parentElement
+        var editrow_inputs = partRow.querySelectorAll('.editrow__input')
+        var defaultValues = partRow.querySelectorAll('.defaultrow__text')
+
+        for (const input of editrow_inputs) {
+            input.style.display = 'block'
+        }
+
+
+        for (const def of defaultValues) {
+            def.style.display = 'none'
+        }
+
+    })
+
+    $('.saverow__icon').click(function (e) {
+        var partRow = e.target.parentElement.parentElement.parentElement
+        var editedRow = {}
+        var editrow_inputs = partRow.querySelectorAll('.editrow__input')
+        var defaultValues = partRow.querySelectorAll('.defaultrow__text')
+        editedRow = {
+            part_id: partRow.getAttribute('part-id'),
+            name: editrow_inputs[0].value,
+            mark: editrow_inputs[1].value,
+            unit: editrow_inputs[2].value,
+            quantity_unit: editrow_inputs[3].value,
+            quantity: editrow_inputs[4].value,
+            notes: editrow_inputs[5].value,
+            url: editrow_inputs[6].value,
+        }
+        editedRow.mark = editedRow.mark.split('\n')
+        editedRow.unit = editedRow.unit.split('\n')
+        editedRow.quantity_unit = editedRow.quantity_unit.split('\n')
+
+        editedPartsList.push(editedRow)
+        defaultValues[0].innerHTML = editedRow.name
+        defaultValues[1].innerHTML = editedRow.mark[0]
+        defaultValues[2].innerHTML = editedRow.unit[0]
+        defaultValues[3].innerHTML = editedRow.quantity_unit[0]
+        defaultValues[4].innerHTML = editedRow.quantity
+        defaultValues[5].innerHTML = editedRow.notes
+        var count = 1;
+        $('.part_element_nextMark').each(function(){
+            if($(this).attr('part-id') == partRow.getAttribute('part-id')){
+                var defaultMarkValues = this.querySelectorAll('.defaultrow__text')
+                defaultMarkValues[0].innerHTML = editedRow.mark[count]
+                defaultMarkValues[1].innerHTML = editedRow.unit[count]
+                defaultMarkValues[2].innerHTML = editedRow.quantity_unit[count]
+                count++;
+            }
+        })
+        for (const input of editrow_inputs) {
+
+            input.style.display = 'none'
+        }
+
+
+        for (const def of defaultValues) {
+
+            def.style.display = 'block'
+        }
+
+
+
+    })
+</script>
+{% endblock scripts %}

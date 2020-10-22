@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}
+Альфа | Дзержинск - Разработка и поставка деталей машиностроения
+{% endblock %}
+
+{% block metatags %}
+<meta name="Description"
+    content="Разработчик и поставщик компонентов машиностроения. Детали двигателей: подшипники скольжения (вкладыши, втулки), резиновые детали, торцевые уплотнения насосов и прокладки" />
+{% endblock %}
+
+
+{% block links %}
+<link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/owl.theme.default.min.css' %}">
+{% endblock links %}
+
+{% block content %}
+<section class="main-info container">
+    <div class="main-info__title">
+        <h1 style="text-align: center;" class="index__title">Компоненты&nbsp;двигателей
+            Детали&nbsp;машиностроения
+            разработка|поставка</h1>
+        <hr>
+        <p style="text-align: center;">Альфа- российский разработчик и поставщик компонентов для средне и высокофорсированных двигателей
+            отечественного и импортного производства, а также деталей общего машиностроения.
+        </p>
+    </div>
+    <div class="main-info__slider">
+        <div class="owl-carousel">
+            <div class="owl-carousel__item"><img src="{% static 'img/1.jpeg' %}" alt=""></div>
+            <div class="owl-carousel__item"><img src="{% static 'img/2.jpeg' %}" alt=""></div>
+            <div class="owl-carousel__item"><img src="{% static 'img/3.jpeg' %}" alt=""></div>
+        </div>
+    </div>
+</section>
+<hr>
+<section class="container info">
+    <div class="info-popular">
+        <h2>Популярное</h2>
+        <div class="column__wrapper">
+            {% for popular_item in popular %}
+            <div class="popular-item">
+                <a href="{{popular_item.uri}}" class="popular-item__img" style="background: url({{popular_item.img.url}}) no-repeat center/100%;">
+                </a>
+                <div class="popular-item__title">
+                    <h3>{{popular_item.title}}</h3>
+                </div>
+                <div class="popular-item__description">
+                    {{popular_item.shortDescription}}
+                </div>
+                <div class="popular-item__about">
+                    <a href="{{popular_item.uri}}">Подробнее</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="info-sidebar">
+        <div class="info-downloads">
+            <h2>Загрузки</h2>
+            <div class="column__wrapper">
+                {% for doc in docs %}
+                <div class="download-item">
+                    <div class="download-item__img">
+                        <img src="{% static 'img/excel.png' %}" alt="" width="54px">
+                    </div>
+                    <div class="download-item__title">
+                        <h3>{{ doc.name }}</h3>
+                    </div>
+                    <div class="download-item__about">
+                        <a href="{{ doc.data.url }}">Скачать</a><span
+                            style="float: right; font-size: 12px;">Дата обновления: {{doc.date}}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+        </div>
+        <div class="info-news">
+            <h2>Новости</h2>
+            <div class="column__wrapper">
+                {% for news_item in news %}
+                <div class="news-item">
+                    <a href="/news/{{ news_item.id }}" class="news-item__img" style="background: url({{news_item.img.url}}) no-repeat center/70%;">
+                    </a>
+                    <div class="news-item__title-index">
+                        <h3>{{ news_item.title }}</h3>
+                    </div>
+                    <div class="news-item__description">
+                        {{news_item.shortDescription}}
+                    </div>
+                    <div class="news-item__about">
+                        <a href="/news/{{ news_item.id }}">Подробнее</a><span
+                            style="float: right; bottom: 0; font-size: 12px;">{{news_item.date}}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="news-more" style="text-align: center; padding: 20px 0 50px 0;">
+                <a href="news/">Все новости</a>
+            </div>
+
+        </div>
+    </div>
+</section>
+{% endblock content %}
+
+{% block scripts %}
+<script src="{% static 'js/owl.carousel.min.js' %}"></script>
+<script>
+    $(document).ready(function () {
+        $(".owl-carousel").owlCarousel({
+            items: 1,
+            loop: true,
+            autoplay: true,
+            autoplayTimeout: 4000,
+            smartSpeed: 600,
+        });
+    });
+</script>
+{% endblock scripts %}

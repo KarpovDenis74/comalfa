@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+О компании - Альфа | Дзержинск
+{% endblock %}
+
+{% block metatags %}
+<meta name="Description"
+    content="Альфа- российский разработчик и поставщик компонентов для средне и высокофорсированных двигателей отечественного и импортного производства, а также деталей общего машиностроения." />
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="breadcrumbs">
+        <a href="/">Главная</a> / Корзина
+    </div>
+</div>
+<div class="container">
+
+    <h1>Корзина</h1><span class="line"></span>
+
+    <div class="column-wrap about_wrap">
+        {% for cart_i in cart_g %}
+        <div class="cart-item" data-item_id="{{cart_i.id}}">
+
+            <div class="cart-item-name">
+                <a href="/goodscat/{{cart_i.id}}">{{cart_i.name}} {{cart_i.mark}}</a>
+            </div>
+            <div class="cart-item-price">
+                <span class="cart__price">{% if cart_i.price %} {{cart_i.price}}.00 р. {% else %} - {% endif %}</span><br>
+                <span class="cart-price__quantity">В наличии: {% if cart_i.quantity %} {{cart_i.quantity}} {% else %} -
+                    {% endif %}</span>
+            </div>
+            <div class="cart-item-quantity">
+                <div class="cart-item-quantity-btns">
+                    <div class="quantity__wrapper">
+                        <button class="quantity__btn" onclick="cartCountMinus({{cart_i.id}})">-</button>
+                        <input type="text" class="quantity__text" id="quantity__text_i{{cart_i.id}}" readonly
+                            value="{{cart_i.count}}">
+                        <button class="quantity__btn" onclick="cartCountPlus({{cart_i.id}})">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="cart-item-check">
+                <i class="fas fa-trash delete_item" data-item_id="{{cart_i.id}}" style="color: rgb(189, 0, 0);"></i>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-cart__text">На данный момент в корзине нет товаров</div>
+        {% endfor %}
+        {% if cart_g %}
+        <br>
+        <h2>Заполните заявку на заказ</h2>
+        <div class="cart-order-form">
+            <form name="submit_order" id="submit_order" action="/thanks">
+
+                <input type="name" class="tender_input" name="name" placeholder="Имя" required><br>
+                <input type="email" class="tender_input" name="email" placeholder="Эл. почта" required><br>
+                <textarea name="message" class="tender_input" id="" cols="30" rows="6"
+                    placeholder="Добавьте сообщение"></textarea>
+                <div class="submit-btn-wrapper">
+                    <button class="tender-btn" type="submit">Отправить</button>
+                </div>
+            </form>
+        </div>
+
+
+        <!-- <div class="cart-order-btn">
+            <a href="/order" class="com-btn" id="order_btn">
+                <span>Заказать</span>
+            </a>
+        </div> -->
+
+        {% else %}
+        {% endif %}
+    </div>
+
+
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    $('.checkbox_item').click(function () {
+        $(this).toggleClass('active_check')
+    })
+    $('.delete_item').click(function () {
+        var item_id = $(this).attr('data-item_id');
+        var items_list_delete = []
+        items_list_delete.push(item_id)
+        fetch('/gooddelete/' + item_id, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                showPopUp('Товары удалены')
+                $('.cart-item').each(function (item) {
+                    if (items_list_delete.includes($(this).attr('data-item_id'))) {
+                        $(this).remove();
+                    }
+
+                })
+                updateCountCart();
+            })
+            .catch((error) => {
+                showPopUpError('Ошибка при удалении товаров')
+            });
+
+    })
+
+    function cartCountPlus(id) {
+        var curr_val = Number($('#quantity__text_i' + id).val());
+        $('#quantity__text_i' + id).val(curr_val + 1)
+        changeCountFetch(id, $('#quantity__text_i' + id).val())
+    }
+    function cartCountMinus(id) {
+        console.log(id)
+        var curr_val = Number($('#quantity__text_i' + id).val());
+        if (curr_val < 2) {
+            return false;
+        }
+        $('#quantity__text_i' + id).val(curr_val - 1)
+        changeCountFetch(id, $('#quantity__text_i' + id).val())
+    }
+
+    function changeCountFetch(id, count) {
+        fetch('/changecount/' + id + '/' + count, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+            .then((response) => response.json())
+            .then((responseJson) => {
+
+            })
+            .catch((error) => {
+                showPopUpError('Ошибка')
+            });
+    }
+    $('#submit_order').submit(function (e) {
+
+        var fd = new FormData(submit_order);
+
+        fetch("/new_order_request/", {
+            method: "POST",
+            body: fd
+        }).then(function (response) {
+            return response.json();
+        }).then(function (data) {
+
+            console.log(data);
+        });
+    })
+</script>
+
+
+{% endblock scripts %}

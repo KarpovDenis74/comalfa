@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Разработка - Альфа | Дзержинск
+{% endblock %}
+
+{% block metatags %}
+<meta name="Description"
+    content="Компания Альфа занимается услугами разработки компонентов , уплотнений для двигателей, подшипников скольжения, топливной аппаратуры на заказ такие как (вал, втулка, шкив, фланец, подшипник скольжения,кольца и прокладки каучуковые, пресс-формы, спец. метизы, механические уплотнения для насосов)" />
+{% endblock %}
+
+{% block links %}
+
+{% endblock links %}
+
+{% block content %}
+<div class="container">
+    <div class="breadcrumbs">
+        <a href="/">Главная</a> / <a href="/services">Услуги</a> / Разработка
+    </div>
+</div>
+<div class="container">
+
+    <div class="bearing-wrap">
+        <div class="bearing-wrap-info">
+            <h1>Разработка
+            </h1><span class="line"></span>
+            <div class="bearing_img__aftertext">
+                <img src="{% static 'img/develop.png' %}" alt="" class="bearing_img__aftertext__img">
+            </div>
+            <div class="bearing-wrap-text">
+                Наша компания оказывает услуги по разработке деталей и узлов для машиностроения. Производим модернизацию
+                производственного процесса, внедрение новых материалов и технологий.
+                Разрабатываем детали типа:
+                <ul>
+                    <li>вал</li>
+                    <li>втулка</li>
+                    <li>шкив</li>
+                    <li>фланец</li>
+                    <li>подшипник скольжения</li>
+                    <li>кольца и прокладки каучуковые</li>
+                    <li>пресс-формы</li>
+                    <li>спец. метизы</li>
+                    <li>механические уплотнения для насосов</li>
+                </ul>
+            </div>
+        </div>
+        <div class="bearing-wrap-img">
+            <img src="{% static 'img/develop.png' %}" alt="" height="100%">
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<script>
+
+</script>
+
+
+{% endblock scripts %}

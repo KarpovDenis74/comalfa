@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    Альфа | Дзержинск - Разработка и поставка деталей машиностроения
+{% endblock %}
+
+{% block metatags %}
+<meta name="Description"
+    content="Разработчик и поставщик компонентов машиностроения. Детали двигателей :подшипники скольжения (вкладыши,втулки ), резиновые детали, торцевые уплотнения насосов и прокладки" />
+{% endblock %}
+
+{% block links %}
+
+{% endblock links %}
+
+{% block content %}
+<div class="container">
+    <div class="breadcrumbs">
+        <a href="/">Главная</a> / Информация / <a href="/category">Каталоги деталей</a> / <a href="/category/{{curr_engine.id}}/units/{{curr_unit.id}}">{{curr_engine.name}}</a> / {{curr_unit.name}}
+    </div>
+</div>
+<br>
+<div class="container">
+    <h2>{{ part.name }}</h2>
+    <p id="mark" style="font-weight: bold;">{{part.marks}}</p>
+    <p id="sbor"></p>
+    <p id="quant"></p>
+    <p>Кол-во на двигатель:{{ part.quantity }}</p>
+    <p>Примечание:{{ part.notes }}</p>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    var mark = $('#mark').text();
+    $('#mark').text('Маркировка: ' + mark.split(';')[0].split(',')[0]);
+    $('#sbor').text('Сборочная единица: ' + mark.split(';')[0].split(',')[1]);
+    $('#quant').text('Кол-во деталей: ' + mark.split(';')[0].split(',')[2]);
+</script>
+
+
+{% endblock scripts %}

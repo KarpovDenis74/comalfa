@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Сертификаты - Альфа | Дзержинск
+{% endblock %}
+
+{% block metatags %}
+<meta name="Description"
+    content="Сертификат качества, компания Альфа . Российский разработчик компонентов." />
+{% endblock %}
+
+{% block links %}
+<link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/owl.theme.default.min.css' %}">
+{% endblock links %}
+
+{% block content %}
+<div class="container">
+    <div class="breadcrumbs">
+        <a href="/">Главная</a> / Сертификаты
+    </div>
+</div>
+<div class="container">
+    <h1>Сертификаты</h1><span class="line"></span>
+    <div class="sert-slider">
+        <div class="owl-carousel">
+            <div class="owl-carousel__item"><img src="{% static 'img/sert1.png' %}" alt=""></div>
+            <div class="owl-carousel__item"><img src="{% static 'img/sert2.png' %}" alt=""></div>
+            <div class="owl-carousel__item"><img src="{% static 'img/sert_no.png' %}" alt=""></div>
+            <div class="owl-carousel__item"><img src="{% static 'img/sert_no.png' %}" alt=""></div>
+            <div class="owl-carousel__item"><img src="{% static 'img/sert_no.png' %}" alt=""></div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<script src="{% static 'js/owl.carousel.min.js' %}"></script>
+<script>
+    $(document).ready(function () {
+        $(".owl-carousel").owlCarousel({
+            items: 3,
+            loop: true,
+            autoplay: true,
+            autoplayTimeout: 4000,
+            smartSpeed: 600,
+        });
+    });
+</script>
+
+{% endblock scripts %}

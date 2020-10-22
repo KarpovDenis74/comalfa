@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Новости - Альфа | Дзержинск
+{% endblock %}
+
+{% block metatags %}
+<meta name="Description"
+    content="Информация о новых разработках, снижении стоимости, обновление коммерческих данных, добавление статей о компонентах и важная информация." />
+{% endblock %}
+
+{% block links %}
+
+{% endblock links %}
+
+{% block content %}
+<div class="container">
+    <div class="breadcrumbs">
+        <a href="/">Главная</a> / Информация / Новости
+    </div>
+</div>
+<div class="container">
+    <h1>Новости</h1><span class="line"></span>
+    <div class="news-wrapper">
+        {% for new in news %}
+        <div class="news-item">
+            <a href="/news/{{ new.id }}" class="news-item__img" style="background: url({{new.img.url}}) no-repeat center/70%;">
+            </a>
+            <div class="news-item__title">
+                <h3>{{ new.title }}</h3>
+            </div>
+            <div class="news-item__description">
+                {{new.shortDescription}}
+            </div>
+            <div class="news-item__about">
+                <a href="/news/{{ new.id }}">Подробнее</a><span class="news-item__date"
+                    style="float: right; bottom: 0; font-size: 12px;">{{new.date}}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="pagination">
+        <span class="step-links">
+            {% if news.has_previous %}
+            <a href="?page={{ news.previous_page_number }}"><i class="flaticon-left-arrow"></i></a>
+            {% else %}
+            <div><i class="flaticon-left-arrow"></i></div>
+            {% endif %}
+            {% for page in num_pages %}
+            {% if page ==  news.number%}
+            <div class="curr_page">{{page}}</div>
+            {% else %}
+            <a href="?page={{page}}" class="num_page">{{page}}</a>
+            {% endif %}
+            
+            {% endfor %}
+            {% if news.has_next %}
+            <a href="?page={{ news.next_page_number }}"><i class="flaticon-right-arrow"></i></a>
+            {% else %}
+            <div><i class="flaticon-right-arrow"></i></div>
+            {% endif %}
+
+        </span>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<script>
+
+</script>
+{% endblock scripts %}

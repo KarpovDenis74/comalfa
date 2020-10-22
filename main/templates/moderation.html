@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    Альфа | Дзержинск - Разработка и поставка деталей машиностроения
+{% endblock %}
+
+{% block metatags %}
+<meta name="Description"
+    content="Разработчик и поставщик компонентов машиностроения. Детали двигателей :подшипники скольжения (вкладыши,втулки ), резиновые детали, торцевые уплотнения насосов и прокладки" />
+{% endblock %}
+
+{% block links %}
+
+<link rel="stylesheet" href="{% static 'css/moderation.css' %}">
+<link rel="stylesheet" href="{% static 'css/datepicker.min.css' %}">
+{% endblock links %}
+
+{% block content %}
+<div class="container">
+    <h1>Редактирование новостей</h1>
+    <div class="moder-news-list">
+        <div class="settings">
+            <i class="fas fa-plus-square"></i> <i class="fas fa-edit"></i> <i class="fas fa-eye-slash"></i> <i
+                class="fas fa-trash-alt"></i>
+        </div>
+        {% for news_item in news %}
+        <div class="news-item">
+            <div class="news-item__checkbox">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input check-items" news_id="{{ news_item.id }}">
+                    {% if news_item.visible %}
+                    <i class="fas fa-eye"></i>
+                    {% else %}
+                    <i class="fas fa-eye-slash"></i>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="news-item__img" style="background: url({{news_item.img.url}}) no-repeat center/60%;">
+            </div>
+            <div class="news-item__title">
+                <h3>{{ news_item.title }}</h3>
+            </div>
+            <div class="news-item__description">
+                Изготовление муфт втулочно-пальцевых {{news_item.shortDescription}}
+            </div>
+            <div class="news-item__about">
+                <a href="/news/{{ news_item.id }}">Подробнее</a><span
+                    style="float: right; bottom: 0; font-size: 12px;">{{news_item.date}}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div id="order-form__modal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+        <h1>Добавление новости</h1>
+        <form name="addNewPost" id="addNewPost">
+            <div class="form-group row">
+                <label for="title" class="col-sm-2 col-form-label">Заголовок</label>
+                <div class="col-sm-10">
+                    <input type="text" name="title" class="form-control" id="title" placeholder="">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="shortDesc" class="col-sm-2 col-form-label">Короткое описание</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" name="shortDesc" id="shortDesc" rows="2"></textarea>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="longDesc" class="col-sm-2 col-form-label">Длинное описание</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" name="longDesc" id="longDesc" rows="4"></textarea>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="staticEmail" class="col-sm-2 col-form-label">Дата</label>
+                <div class="col-sm-10">
+                    <div class="input-group date">
+                        <input type='text' name="date" class="form-control col-lg-3 datepicker-here"
+                            style="width: 200px;" data-position="right top" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="staticEmail" class="col-sm-2 col-form-label">Изображение</label>
+                <div class="col-sm-10">
+                    <div class="custom-file">
+                        <input type="file" name="image" class="custom-file-input" id="customFile">
+                        <label class="custom-file-label" for="customFile">Выберите изображение</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-btns">
+                <div class="back-btn" id="modal-back">
+                    <span>Назад</span>
+                </div>
+                <div class="save-btn" id="modal-save">
+                    <span>Сохранить</span>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+
+<script src="{% static 'js/datepicker.min.js' %}"></script>
+<script>
+
+    var add_post_modal = document.getElementById("order-form__modal");
+    var modal_back = document.getElementById("modal-back");
+
+    var add_post_btn = document.getElementsByClassName('fa-plus-square')[0];
+
+    add_post_btn.onclick = function () {
+        add_post_modal.style.display = "block";
+    }
+
+    modal_back.onclick = function () {
+        add_post_modal.style.display = "none";
+    }
+
+    window.onclick = function (event) {
+        if (event.target == add_post_modal) {
+            add_post_modal.style.display = "none";
+        }
+    }
+    $('#modal-save').click(function () {
+        var fd = new FormData(addNewPost);
+        for (var key of fd.entries()) {
+            console.log(key[0] + ', ' + key[1])
+        }
+        fetch("/new_post/", {
+            method: "POST",
+            body: fd
+        }).then(function (response) {
+            location.reload();
+            return response.json();
+        }).then(function (data) {
+            console.log(data);
+        });
+    });
+
+    $('.fa-trash-alt').click(function () {
+        let list_id = [];
+        $('.check-items').each(function () {
+            if ($(this).prop('checked') == true) {
+                list_id.push($(this).attr('news_id'));
+            }
+        })
+
+        var myData = {};
+
+        myData.list_id = list_id;
+        console.log(myData);
+        var data = new FormData();
+        data.append("json", JSON.stringify(myData));
+
+        fetch("/del_news/", {
+            method: "POST",
+            body: data
+        }).then(function (response) {
+            location.reload();
+            return response.json();
+        }).then(function (data) {
+
+        });
+    });
+    $('.fa-eye-slash').click(function () {
+        let list_id = [];
+        $('.check-items').each(function () {
+            if ($(this).prop('checked') == true) {
+                list_id.push($(this).attr('news_id'));
+            }
+        })
+
+        var myData = {};
+
+        myData.list_id = list_id;
+        console.log(myData);
+        var data = new FormData();
+        data.append("json", JSON.stringify(myData));
+
+        fetch("/hide_news/", {
+            method: "POST",
+            body: data
+        }).then(function (response) {
+            location.reload();
+            return response.json();
+        }).then(function (data) {
+
+        });
+
+    });
+
+</script>
+{% endblock scripts %}

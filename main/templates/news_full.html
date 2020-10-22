@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    Альфа | Дзержинск - Разработка и поставка деталей машиностроения
+{% endblock %}
+
+{% block metatags %}
+<meta name="Description"
+    content="Разработчик и поставщик компонентов машиностроения. Детали двигателей :подшипники скольжения (вкладыши,втулки ), резиновые детали, торцевые уплотнения насосов и прокладки" />
+{% endblock %}
+
+{% block links %}
+
+{% endblock links %}
+
+{% block content %}
+<div class="container">
+    <div class="breadcrumbs">
+        <a href="/">Главная</a> / <a href="/news">Новости</a> / {{ news.title }}
+    </div>
+</div>
+<div class="container">
+    <div class="news-card">
+        <h1>{{ news.title }}</h1>
+        <p style="font-size: 18px; width: 90%;">{{ news.longDescription }}</p>
+        <div class="news-card__date">
+            <p style="float: right;">{{ news.date }}</p>
+        </div>
+        
+        <img src="{{ news.img.url }}" alt="" width="90%">
+    </div>
+
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    
+</script>
+{% endblock scripts %}

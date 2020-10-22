@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Товары со скидкой - Альфа | Дзержинск
+{% endblock %}
+
+{% block metatags %}
+<meta name="Description"
+    content="Товары со сниженной ценой, распродажа подшипников скольжения, прокладок, резиновых деталей, топливного оборудования, компонентов двигателя со скидкой" />
+{% endblock %}
+
+{% block links %}
+
+{% endblock links %}
+
+{% block content %}
+<div class="container">
+    <div class="breadcrumbs">
+        <a href="/">Главная</a> / Информация / Товары со скидкой
+    </div>
+</div>
+<div class="container">
+
+    <h1>Товары со скидкой</h1><span class="line"></span>
+    {% if user.is_superuser %}
+    <br>
+    <div class="moder-refresh">
+        <h2>Обновить список</h2>
+        <h5>Обновление списка перспективной продукции, остатка на складе, цен и товаров со скидкой</h5>
+        <p style="font-size: 11px;">Необходимо загрузить файл *.xlsx</p>
+        <form name="refreshDiscount" method="post" action="" enctype="multipart/form-data"> {% csrf_token %}
+            <input type="file" name="file" required>
+            <button type="submit" class="btn btn-outline-success" id="submit" onsubmit="return false;">Обновить</button>
+        </form>
+    </div>
+    {% else %}
+
+    {% endif %}
+    <br>
+    <table class="table table-hover table-sm">
+        <thead>
+            <tr>
+                <th scope="col" style="width: 30%;">Товар</th>
+                <th scope="col" style="width: 15%;">Применение</th>
+                <th scope="col" style="width: 15%;">Группа</th>
+                <th scope="col" style="width: 15%;">Изготовитель</th>
+                <th scope="col" style="width: 10%;">Цена без НДС</th>
+                <th scope="col" style="width: 5%; text-align: center;">Скидка</th>
+                <th scope="col" style="width: 10%; text-align: center;">Цена со скидкой</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in discount %}
+            <tr>
+                <td>{{ item.name }} {{item.mark}}</td>
+                <td style="text-align: center;">{% for use in item.usingUrl %}
+                    {% for key, value in use.items %}
+                    {% if value != '' %}
+                    <a href="{{value}}">{{key}}</a>,
+                    {% else %}
+                    {% if key == key|last %}
+                    {{key}}
+                    {% else %}
+                    {{key}},
+                    {% endif %}
+                    {% endif %}
+                    {% endfor %}
+                    {% endfor %}</td>
+                <td style="text-align: center;">{{ item.type }}</td>
+                <td style="text-align: center;">{{ item.manufactur }}</td>
+                <td style="text-align: center;">{{ item.price }}0р</td>
+                <td style="text-align: center; font-weight: bold; color: green;">{{ item.discount }}%</td>
+                <td style="text-align: center; font-weight: bold; color: green;">{{ item.cost }}0р</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="sales-order-btn">
+        <a href="/order" class="com-btn">
+            <span>Заказать</span>
+        </a>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    $('#submit').click(function () {
+        showPopUpLoading('Обновление списка товаров. Ожидайте...');
+        var fd = new FormData(refreshDiscount);
+        fetch("/refresh_discount_goods/", {
+            method: "POST",
+            body: fd
+        }).then(function (response) {
+            return response.json();
+        }).then(function (data) {
+            if (data == 'success') {
+                showPopUp('Обновление прошло успешно')
+            }
+            else if (data == 'file_error') {
+                showPopUpError('Ошибка при сохранении файла')
+            }
+            else if (data == 'parsing_error') {
+                showPopUpError('Ошибка при парсинга excel файла')
+            }
+            else {
+                showPopUpError('Ошибка при парсинга excel файла')
+            }
+            console.log(data);
+        });
+        return false;
+    });
+</script>
+
+
+{% endblock scripts %}
