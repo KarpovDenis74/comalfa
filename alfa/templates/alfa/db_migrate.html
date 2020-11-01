@@ -1,0 +1,72 @@
+{% extends "alfa/base.html" %}
+{% load static %}
+
+
+{% block title %}
+Альфа | Дзержинск - Разработка и поставка деталей машиностроения
+{% endblock %}
+
+{% block metatags %}
+<meta name="Description"
+    content="Разработчик и поставщик компонентов машиностроения. Детали двигателей: подшипники скольжения (вкладыши, втулки), резиновые детали, торцевые уплотнения насосов и прокладки" />
+{% endblock %}
+
+
+{% block links %}
+<link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/owl.theme.default.min.css' %}">
+{% endblock links %}
+
+{% block content %}
+<section class="main-info container">
+    <div class="main-info__title">
+        <h1 style="text-align: center;" class="index__title">Результаты копирования базы данных</h1>
+        <hr>
+        <p style="text-align: center;">Альфа- российский разработчик и поставщик компонентов для средне и высокофорсированных двигателей
+            отечественного и импортного производства, а также деталей общего машиностроения.
+        </p>
+    </div>
+    <div class="main-info__slider">
+        <div class="owl-carousel">
+            <div class="owl-carousel__item"><img src="{% static 'img/1.jpeg' %}" alt=""></div>
+            <div class="owl-carousel__item"><img src="{% static 'img/2.jpeg' %}" alt=""></div>
+            <div class="owl-carousel__item"><img src="{% static 'img/3.jpeg' %}" alt=""></div>
+        </div>
+    </div>
+</section>
+<hr>
+<section class="container info">
+    <div class="info-popular">
+        <h2>Результаты копирования в каталог из базы {{bd}}</h2>
+        <div class="column__wrapper">
+            <p></p>
+            <h3>Созданные объекты</h3>
+            {% for append_item in append %}
+                <p> {{append_item.append}}" </p>
+            {% endfor %}
+            <p></p>
+            <h3>Ошибки</h3>
+            {% for errors_item in errors %}
+                <p> {{errors_item.error}} </p>
+            {% endfor %}
+            <p></p>
+        </div>
+    </div>
+    
+</section>
+{% endblock content %}
+
+{% block scripts %}
+<script src="{% static 'js/owl.carousel.min.js' %}"></script>
+<script>
+    $(document).ready(function () {
+        $(".owl-carousel").owlCarousel({
+            items: 1,
+            loop: true,
+            autoplay: true,
+            autoplayTimeout: 4000,
+            smartSpeed: 600,
+        });
+    });
+</script>
+{% endblock scripts %}

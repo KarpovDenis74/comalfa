@@ -27,7 +27,10 @@ handler500 = server_error
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls')),
+    path('alfa/', include('alfa.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += staticfiles_urlpatterns()
+
+print(settings.MEDIA_ROOT)

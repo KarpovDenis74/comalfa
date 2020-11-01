@@ -82,18 +82,7 @@ class Catalog(models.Model):
     def get_image_path(self, filename):
         ext = filename.split('.')[-1]
         path = ''.join(
-            ["Alfa_catalog_images/", translit.slugify(filename.strip()), '.', ext])
-
-    def get_guide_path(self, filename):
-        ext = filename.split('.')[-1]
-        path = ''.join(
-            ["Alfa_guide_images/", translit.slugify(filename.strip()), '.', ext])
-
-    def get_scheme_path(self, filename):
-        ext = filename.split('.')[-1]
-        path = ''.join(
-            ["Alfa_scheme_images/", translit.slugify(filename.strip()), '.', ext])
-
+            ["Catalog_images/", translit.slugify(filename.strip()), '.', ext])
 
     def filename(self):
         return os.path.basename(self.filePDF.name)
@@ -101,22 +90,19 @@ class Catalog(models.Model):
     def get_filePDF_path(self, filename):
         ext = filename.split('.')[-1]
         path = ''.join(
-            ["Alfa_engines_guides/", translit.slugify(filename.strip()), '.', ext])
+            ["GuidesForEngines/", translit.slugify(filename.strip()), '.', ext])
         return path
 
     def __str__(self):
         return self.name
 
+    multiple_parts = models.BooleanField(default=False)
     name = models.CharField(max_length=200, verbose_name='Название')
     manufactur = models.CharField(
         max_length=200, verbose_name='Завод производитель', blank=True)
     series = models.CharField(max_length=200, verbose_name='Серия')
-#  SeriesEngine.img из main
     img = models.ImageField(upload_to=get_image_path,
                             verbose_name='Фото', blank=True, null=True)
-# Engine.img  и из EngineUnits.img из main
-    scheme = models.ImageField(upload_to=get_scheme_path,
-                            verbose_name='Схема', blank=True, null=True)        
     filePDF = models.FileField(storage=fs, upload_to=get_filePDF_path,
                                verbose_name='Документ pdf', blank=True,
                                null=True, default='default_pdf.pdf')
@@ -132,8 +118,16 @@ class Catalog(models.Model):
         max_length=600, verbose_name='Примечание', blank=True, null=True)
     marks = models.CharField(
         max_length=600, verbose_name='Маркировки', blank=True, null=True)
-    guide = models.FileField(upload_to=get_guide_path,
+    guide = models.FileField(upload_to=get_image_path,
                              verbose_name='Документ pdf/excel/word')
+
+def validate_multiple(value):
+    mult = Catalog.objects.get(pk=value)
+    if not mult.multiple_parts:
+        raise ValidationError(
+            _('%(mult.name)s не составная деталь'),
+            params={'value': value},
+        )
 
 
 class MultipleParts(models.Model):
@@ -142,16 +136,16 @@ class MultipleParts(models.Model):
         on_delete=models.CASCADE, 
         verbose_name='Состовной элемент', 
         blank=False, 
-        related_name='multiple')
+        related_name='multiple', 
+        validators=[validate_multiple])
     parts= models.ForeignKey(
         Catalog, on_delete=models.CASCADE, verbose_name='Деталь составного элемента', blank=False, related_name='part')
-    quantity = models.PositiveIntegerField(verbose_name='Количество', blank=False)
-    sort_id = models.PositiveIntegerField(verbose_name='Порядковый номер', blank=True, null=True)
+    count = models.IntegerField()
 
     def __str__(self):
         return self.count
 
-    class Meta:       
+    class Meta:
+        
         verbose_name = u'Составной элемент'
         verbose_name_plural = u'Составные элементы'
-        unique_together = ("multiple", "parts")
