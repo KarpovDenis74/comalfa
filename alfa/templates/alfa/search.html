@@ -1,0 +1,96 @@
+{% extends "alfa/base.html" %}
+{% load static %}
+
+
+{% block title %}
+Альфа | Дзержинск - Разработка и поставка деталей машиностроения
+{% endblock %}
+
+{% block metatags %}
+<meta name="Description"
+    content="Разработчик и поставщик компонентов машиностроения. Детали двигателей: подшипники скольжения (вкладыши, втулки), резиновые детали, торцевые уплотнения насосов и прокладки" />
+{% endblock %}
+
+
+{% block links %}
+<link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/owl.theme.default.min.css' %}">
+{% endblock links %}
+
+{% block content %}
+<section class="main-info container">
+    <div class="main-info__title">
+        <h1 style="text-align: center;" class="index__title">Поиск деталей</h1>
+        <hr>
+        <p style="text-align: center;">Альфа- российский разработчик и поставщик компонентов для средне и высокофорсированных двигателей
+            отечественного и импортного производства, а также деталей общего машиностроения.
+        </p>
+    </div>
+</section>
+<hr>
+
+<div class="row justify-content-center">
+    <div class="col-md-8 p-5">
+        <div class="card">
+            <div class="card-header">Поиск деталей по каталогу</div>
+            <div class="card-body">
+
+                    {% for error in form.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+
+
+                <form method="post" action="{% url 'catalog' %}">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                        <div class="form-group row" aria-required={% if field.field.required %}"true"{% else %}"false"{% endif %}>
+                                <label for="{{ field.id_for_label }}" class="col-md-4 col-form-label text-md-right">{{ field.label }}{% if field.field.required %}<span class="required">*</span>{% endif %}</label>
+                                <div class="col-md-6">
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                    <small id="{{ field.id_for_label }}-help" class="form-text text-muted">{{ field.help_text|safe }}</small>
+                                    {% endif %}
+                                </div>
+                        </div>
+                    {% endfor %}
+
+                    <div class="col-md-6 offset-md-4">              
+                            <button type="submit" class="btn btn-primary">
+                                Найти деталь
+                            </button>
+                    </div>
+                </form>
+                {% for unit in units %}
+                    <p>
+                        {{unit.name}}
+                        <!-- <a class="btn btn-sm text-muted" href="{% url 'catalog_id' unit.id %}" role="button">{{unit.name}}</a> -->
+                    </p>
+                {% endfor %}
+            </div> <!-- card body -->
+            </div> <!-- card -->
+
+        </div> <!-- col -->
+    </div> <!-- row -->
+</div> 
+
+   
+
+{% endblock content %}
+
+<!-- {% block scripts %}
+<script src="{% static 'js/owl.carousel.min.js' %}"></script>
+<script>
+    $(document).ready(function () {
+        $(".owl-carousel").owlCarousel({
+            items: 1,
+            loop: true,
+            autoplay: true,
+            autoplayTimeout: 4000,
+            smartSpeed: 600,
+        });
+    });
+</script>
+{% endblock scripts %} -->

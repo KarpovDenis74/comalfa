@@ -82,17 +82,17 @@ class Catalog(models.Model):
     def get_image_path(self, filename):
         ext = filename.split('.')[-1]
         path = ''.join(
-            ["Alfa_catalog_images/", translit.slugify(filename.strip()), '.', ext])
+            ["Engine_images/", translit.slugify(filename.strip()), '.', ext])
 
     def get_guide_path(self, filename):
         ext = filename.split('.')[-1]
         path = ''.join(
-            ["Alfa_guide_images/", translit.slugify(filename.strip()), '.', ext])
+            ["GuidesForEngines/", translit.slugify(filename.strip()), '.', ext])
 
     def get_scheme_path(self, filename):
         ext = filename.split('.')[-1]
         path = ''.join(
-            ["Alfa_scheme_images/", translit.slugify(filename.strip()), '.', ext])
+            ["EngineUnits_images/", translit.slugify(filename.strip()), '.', ext])
 
 
     def filename(self):
@@ -101,7 +101,7 @@ class Catalog(models.Model):
     def get_filePDF_path(self, filename):
         ext = filename.split('.')[-1]
         path = ''.join(
-            ["Alfa_engines_guides/", translit.slugify(filename.strip()), '.', ext])
+            ["GuidesForEngines/", translit.slugify(filename.strip()), '.', ext])
         return path
 
     def __str__(self):
@@ -118,8 +118,9 @@ class Catalog(models.Model):
     scheme = models.ImageField(upload_to=get_scheme_path,
                             verbose_name='Схема', blank=True, null=True)        
     filePDF = models.FileField(storage=fs, upload_to=get_filePDF_path,
-                               verbose_name='Документ pdf', blank=True,
-                               null=True, default='default_pdf.pdf')
+                               verbose_name='Документ pdf',
+                               blank=True, null=True
+                               )
     processed = models.BooleanField(
         default=False, verbose_name='Без пароля и водяного знака')
     HTML_markup = models.TextField(
