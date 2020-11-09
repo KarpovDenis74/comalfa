@@ -11,10 +11,26 @@ from django.db.models.functions import Lower
 from django.db.models import Q
 
 
-
 class CatalogView:
+
     def view_id(request, catalog_id):
-        pass
+        # Выбираем деталь из кататога по id
+        detail = Catalog.objects.get(pk=catalog_id)
+        print(detail)
+        # Выбираем детали, из которых состоит рассматриваемая деталь
+        details_down = MultipleParts.objects.select_related('parts').filter(
+            multiple=detail).order_by('sort_id')
+        # Выбираем детали, в которые входит выбранная деталь            
+        details_up = MultipleParts.objects.select_related('multiple').filter(parts=detail)
+        print(details_up)
+
+        context = {}
+        context['parts'] = details_down
+        context['units'] = details_up
+        context['curr_unit'] = detail
+        context['curr_engine'] = detail.name
+        return render(request, 'alfa/category_full.html', context)
+
     def view(request):
         context = {}
         if request.method != 'POST':

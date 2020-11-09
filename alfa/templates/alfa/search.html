@@ -65,8 +65,7 @@
                 </form>
                 {% for unit in units %}
                     <p>
-                        {{unit.name}}
-                        <!-- <a class="btn btn-sm text-muted" href="{% url 'catalog_id' unit.id %}" role="button">{{unit.name}}</a> -->
+                        <a class="btn btn-sm text-muted" href="{% url 'catalog_id' unit.id %}" role="button">{{unit.name}}</a>
                     </p>
                 {% endfor %}
             </div> <!-- card body -->

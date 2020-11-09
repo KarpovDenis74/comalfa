@@ -150,7 +150,7 @@ class MultipleParts(models.Model):
     sort_id = models.PositiveIntegerField(verbose_name='Порядковый номер', blank=True, null=True)
 
     def __str__(self):
-        return self.count
+        return str(self.quantity)
 
     class Meta:       
         verbose_name = u'Составной элемент'

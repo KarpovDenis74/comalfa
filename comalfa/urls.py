@@ -34,3 +34,4 @@ urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += staticfiles_urlpatterns()
 
 print(settings.MEDIA_ROOT)
+print(settings.MEDIA_URL)

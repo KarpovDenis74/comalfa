@@ -10,7 +10,7 @@
     </div>
 </div>
 <div class="container">
-    {% if user.is_superuser and curr_unit %}
+    <!-- {% if curr_unit %}
     <br>
     <div class="moder-refresh">
         <h2>Загрузить изображение для "{{ curr_unit.name }}"</h2>
@@ -36,22 +36,26 @@
             <button type="button" class="btn btn-outline-success" id="sendData">Обновить</button>
         </form>
     </div>
-    {% endif %}
-    <h1>{{curr_engine.name}}</h1><span class="line"></span>
+    {% endif %} -->
+    </br>
+    <h3>{{curr_unit.name}}</h3>
+    <p>является элементом следующих узлов</p>
+    <span class="line"></span>
     <div class="unit-info">
         <div class="unit-parts-menu">
             <div class="units__list">
-                <p>Наименование: {{unit.name}}</p>
-                <!-- <a class="unit_item {% if curr_unit.id == unit.id %} active_unit-item {% endif %}"
+                {% for unit in units %}
+                <a class="unit_item {% if curr_unit.id == unit.id %} active_unit-item {% endif %}"
                     unit_id='{{ unit.id }}' {% if curr_unit.id == unit.id %} {% else %}
-                    href="/category/{{curr_engine.id}}/units/{{ unit.id }}" {% endif %}>{{unit.name}} </a> -->
+                    href="{% url 'catalog_id' unit.multiple.id %}" {% endif %}>{{unit.multiple.name}} </a>
+                {% endfor %}
             </div>
         </div>
         <div class="unit-img__wrapper">
             <div id="unit-img" class="unit-img">
-                {% if curr_unit.img %}
+                {% if curr_unit.scheme %}
                 <img id="mapping_img" draggable="false" style="transition: all 0.5s ease 0s;" class="img-img"
-                    src="{{curr_unit.img.url}}" alt="" usemap="#img_map">
+                    src="{{curr_unit.scheme.url}}" alt="" usemap="#img_map">
                 {% else %}
                 <img class="img-no_image" src="{% static 'img/no_image_hor.jpg' %}" alt="" usemap="#img_map">
                 {% endif %}
@@ -77,6 +81,11 @@
             {% endif %}
         </div>
     </div>
+
+    <span class="line"></span>
+    </br>
+    <h3>В "{{curr_unit.name}}"</h3>
+    <p>входят следующие узлы и детали</p>
     <div class="parts-block">
         <div class="table-overflow__wrapper">
             <table class="table table-hover table-sm category_table">
@@ -95,46 +104,43 @@
 
                 <tbody>
                     {% for part in parts %}
-                    <tr class="part_element" part-id="{{part.id}}" mark-len="{{part.mark|length}}"
+                    <tr class="part_element" part-id="{{part.parts.id}}" mark-len="{{part.parts.mark|length}}"
                         id="line{{forloop.counter}}">
 
                         <th class="th_el"
-                            rowspan="{% if part.mark|length <= 1 %} 1 {% else %} {{ part.mark|length }} {% endif %}"
+                            rowspan="{% if part.parts.mark|length <= 1 %} 1 {% else %} {{ part.parts.mark|length }} {% endif %}"
                             scope="row">
                             {{forloop.counter}}
-                            {% if user.is_superuser and curr_unit %}
+                            {% if curr_unit %}
                             <div class="editrow__icon">
-                                <i class="far fa-edit" part-id="{{part.id}}"></i>
+                                <i class="far fa-edit" part-id="{{part.parts.id}}"></i>
                             </div>
                             <div class="saverow__icon">
-                                <i class="far fa-save" part-id="{{part.id}}"></i>
+                                <i class="far fa-save" part-id="{{part.parts.id}}"></i>
                             </div>
                             <div class="admin_url_row__icon">
-                                <a href="/admin/main/parts/{{part.id}}/change/"><i class="fas fa-user-cog"></i></a>
+                                <a href="/admin/main/parts/{{part.parts.id}}/change/"><i class="fas fa-user-cog"></i></a>
                             </div>
                             {% endif %}
                         </th>
-                        <td rowspan="{% if part.mark|length <= 1 %} 1 {% else %} {{ part.mark|length }} {% endif %}">
-                            <!-- <a href="/category/{{curr_engine.id}}/{{curr_unit.id}}/part/{{part.id}}">
-                                <span class="defaultrow__text">{{part.name}}</span>
-
-                            </a> -->
-                            <span class="defaultrow__text">{{part.name}}</span>
+                        <td rowspan="{% if part.parts.mark|length <= 1 %} 1 {% else %} {{ part.parts.mark|length }} {% endif %}">
+                            <span class="defaultrow__text">
+                                <a class="btn btn-sm text-muted" href="{% url 'catalog_id' part.parts.id %}" role="button">{{part.parts.name}}</a>
+                            </span>
                             <input type="text" class="editrow__input" value="{{part.name}}">
                         </td>
                         <td>
                             <span class="defaultrow__text">{{part.mark|first}}</span>
-                            <!-- <textarea rows="{{ part.mark|length }}" class="editrow__input">{{part.mark}}</textarea> -->
-                            <textarea rows="8" class="editrow__input">{%for mark in part.mark %}{{mark}}{% if not forloop.last %}&#13;&#10;{% endif %}{% endfor %}</textarea>
+                            <textarea rows="8" class="editrow__input">{%for mark in part.parts.mark %}{{mark}}{% if not forloop.last %}&#13;&#10;{% endif %}{% endfor %}</textarea>
                         </td>
                         <td>
-                            <span class="defaultrow__text">{{part.unit|first}}</span>
-                            <textarea rows="8" class="editrow__input">{%for unit in part.unit %}{{unit}}{% if not forloop.last %}&#13;&#10;{% endif %}{% endfor %}</textarea>
+                            <span class="defaultrow__text">{{part.parts.unit|first}}</span>
+                            <textarea rows="8" class="editrow__input">{%for unit in part.parts.unit %}{{unit}}{% if not forloop.last %}&#13;&#10;{% endif %}{% endfor %}</textarea>
                         </td>
                         <td style="text-align: center;">
-                            <span class="defaultrow__text">{{part.quantity_unit|first}}</span>
+                            <span class="defaultrow__text">{{part.parts.quantity_unit|first}}</span>
                             <textarea rows="8"
-                                class="editrow__input">{%for quantity in part.quantity_unit %}{{quantity}}{% if not forloop.last %}&#13;&#10;{% endif %}{% endfor %}</textarea>
+                                class="editrow__input">{%for quantity in part.parts.quantity_unit %}{{quantity}}{% if not forloop.last %}&#13;&#10;{% endif %}{% endfor %}</textarea>
                         </td>
                         <td rowspan="{% if part.mark|length <= 1 %} 1 {% else %} {{ part.mark|length }} {% endif %}"
                             style="text-align: center;">
@@ -142,14 +148,14 @@
                             <input type="text" class="editrow__input" value="{{part.quantity}}">
                         </td>
                         <td rowspan="{% if part.mark|length <= 1 %} 1 {% else %} {{ part.mark|length }} {% endif %}">
-                            {% if part.notes == 'None' %}<span
+                            {% if part.parts.notes == 'None' %}<span
                             class="defaultrow__text"></span> {% else %} <span
-                                class="defaultrow__text">{{part.notes}}</span> {% endif %}
+                                class="defaultrow__text">{{part.parts.notes}}</span> {% endif %}
                             <input type="text" class="editrow__input" value="{{part.notes}}">
                         </td>
                         <td rowspan="{% if part.mark|length <= 1 %} 1 {% else %} {{ part.mark|length }} {% endif %}"
                             style="text-align: center;">
-                            <span class="defaultrow__text">{{part.url}}</span>
+                            <span class="defaultrow__text">{{part.parts.url}}</span>
                             <input type="text" class="editrow__input" value="{{part.url}}">
                         </td>
                     </tr>
@@ -218,7 +224,9 @@
         </div>
     </div>
 </div>
-{% endif %} {% endblock content %} {% block scripts %} {{block.super}} {% if user.is_superuser and curr_unit %}
+{% endif %} {% endblock content %}
+
+<!-- {% block scripts %} {{block.super}} {% if user.is_superuser and curr_unit %}
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular.min.js"></script>
 <script src="https://code.angularjs.org/1.8.0/angular-sanitize.min.js"></script>
 <script>
@@ -425,9 +433,9 @@
             }
         }
     ])
-</script>
+</script> -->
 {% endif %}
-<script>
+<!-- <script>
     let imgx, imgy;
     let newimgx = 0;
     let newimgy = 0;
@@ -718,4 +726,4 @@
 
     })
 </script>
-{% endblock scripts %}
+{% endblock scripts %} -->
