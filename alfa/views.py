@@ -16,7 +16,6 @@ class CatalogView:
     def view_id(request, catalog_id):
         # Выбираем деталь из кататога по id
         detail = Catalog.objects.get(pk=catalog_id)
-        print(detail)
         # Выбираем детали, из которых состоит рассматриваемая деталь
         details_down = MultipleParts.objects.select_related('parts').filter(
             multiple=detail).order_by('sort_id')
@@ -44,11 +43,24 @@ class CatalogView:
             name_lover = name_origin.lower()
             name_upper1 = name_origin[0].upper() + name_origin[1:]
             name_upper = name_origin.upper()
-            context['units'] = Catalog.objects.filter(
+            objects_get = Catalog.objects.filter(
                 Q(name__contains=name_origin) |
                 Q(name__contains=name_lover) |
                 Q(name__contains=name_upper1) |
                 Q(name__contains=name_upper))
+            i = 0
+            a = [[] for _ in range(1000)] 
+            for obj in objects_get:
+                a[i].append(obj)
+                obj1 = MultipleParts.objects.filter(parts=obj).first()
+                while obj1 is not None:
+                    a[i].append(obj1.multiple)
+                    obj1 = MultipleParts.objects.filter(parts=obj1.multiple).first()
+
+                    
+                a[i].reverse()
+                i += 1
+            context['units'] = a
             context['form'] = form
         return render(request, 'alfa/search.html', context=context)
 
@@ -63,7 +75,7 @@ class CatalogView:
                 query_get, flag = Catalog.objects.get_or_create(
                     name=name,
                     manufactur=manufactur,
-                    defaults={'img': img})
+                    defaults={'img': img, 'scheme': img})
                 set_insert.append({'append': f'Объект {name}'})
                 if not flag:
                     set_insert.append({'append': f'    Уже существует в базе'
@@ -142,18 +154,14 @@ class CatalogView:
             HTML_markup = engine_units_item.HTML_markup
             try:
                 set_insert.append({'append': f'Объект {name}'})
-                query_get, flag = Catalog.objects.get_or_create(
+                query_create = Catalog.objects.create(
                     name=name,
-                    defaults={'scheme': scheme,
-                        'HTML_markup': HTML_markup})
-                if not flag:
-                    set_insert.append({'append': f'-    Уже существует в базе'
-                        f' объект с именем {name}'})
-                if query_get is None:
-                    set_insert.append({'append': f'-    Создан успешно'
+                    scheme=scheme,
+                    HTML_markup=HTML_markup)
+                set_insert.append({'append': f'-    Создан успешно'
                         f' объект с именем {name}'})
             except:
-                set_insert.append({'append': f'-    Ошибка при запросе'
+                set_insert.append({'append': f'-    Ошибка при создании'
                     f' объекта с именем {name}'})
             engine = engine_units_item.engine_name  # Двигатель из старого каталога Engine
             catalog = Catalog.objects.filter(name=engine.name).first()     # Находим двигатель в новом каталоге Catalog по имени name
@@ -161,7 +169,7 @@ class CatalogView:
                 continue
             try:
                 multiple = catalog
-                parts = Catalog.objects.filter(name=engine_units_item.name).first()
+                parts = query_create
                 quantity = int(1)
                 sort_id = engine_units_item.sort_id
                 set_insert.append({'append': f'-    Объекты найдены {multiple.name} '
@@ -192,31 +200,28 @@ class CatalogView:
             position = parts_item.position
             notes = parts_item.notes
             quantity = parts_item.quantity
-            marks = parts_item.marks
+            marks = parts_item.marks.split(',')[0]
             try:
                 set_insert.append({'append': f'Объект {name}'})
-                query_get, flag = Catalog.objects.get_or_create(
+                query_create = Catalog.objects.create(
                     name=name,
                     marks=marks, 
-                    defaults={'position': position,
-                        'notes': notes
-                        })
-                if not flag:
-                    set_insert.append({'append': f'Уже существует в базе'
-                        f' объект с именем {name}'})
-                if query_get is None:
-                    set_insert.append({'append': f'Создан успешно'
-                        f' объект с именем {name}'})
+                    position=position,
+                    notes=notes)
+                set_insert.append({'append': f'Создан успешно'
+                    f' объект с именем {name}'})
             except:
                 set_insert.append({'append': f'Ошибка при запросе'
                     f' объекта с именем {name}'})
             engine_units = parts_item.part_unit  # Часть Двигател из старого каталога EngineUnits
-            catalog = Catalog.objects.filter(name=engine_units.name).first()    # Находим часть двигателя в новом каталоге Catalog по имени name
+            catalog = Catalog.objects.filter(name=engine_units.name,
+                HTML_markup=engine_units.HTML_markup,
+                scheme=engine_units.img).first()    # Находим часть двигателя в новом каталоге Catalog по имени name
             if catalog is None:
                 continue
             try:
                 multiple = catalog
-                parts = Catalog.objects.filter(name=name, marks=marks).first()
+                parts = query_create
                 set_insert.append({'append': f'-    Объекты найдены {multiple.name} '
                     f'и {parts.name}. Пытаемся создать связь'})
                 MultipleParts.objects.create(multiple=multiple,

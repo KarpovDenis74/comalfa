@@ -38,12 +38,17 @@
     </div>
     {% endif %} -->
     </br>
-    <h3>{{curr_unit.name}}</h3>
+    {% if curr_unit.marks %}
+        <h3>В "{{curr_unit.name}} (маркировка: {{curr_unit.marks}})"</h3>
+    {% else %}
+        <h3>В "{{curr_unit.name}}"</h3>
+    {% endif %}   
     <p>является элементом следующих узлов</p>
     <span class="line"></span>
     <div class="unit-info">
         <div class="unit-parts-menu">
             <div class="units__list">
+                </br>
                 {% for unit in units %}
                 <a class="unit_item {% if curr_unit.id == unit.id %} active_unit-item {% endif %}"
                     unit_id='{{ unit.id }}' {% if curr_unit.id == unit.id %} {% else %}
@@ -84,7 +89,11 @@
 
     <span class="line"></span>
     </br>
-    <h3>В "{{curr_unit.name}}"</h3>
+    {% if curr_unit.marks %}
+        <h3>В "{{curr_unit.name}} (маркировка: {{curr_unit.marks}})"</h3>
+    {% else %}
+        <h3>В "{{curr_unit.name}}"</h3>
+    {% endif %}   
     <p>входят следующие узлы и детали</p>
     <div class="parts-block">
         <div class="table-overflow__wrapper">
@@ -130,11 +139,19 @@
                             <input type="text" class="editrow__input" value="{{part.name}}">
                         </td>
                         <td>
-                            <span class="defaultrow__text">{{part.mark|first}}</span>
+                            <span class="defaultrow__text">
+                                {% if part.parts.marks %}
+                                    {{part.parts.marks}}
+                                {% endif %}
+                            </span>
                             <textarea rows="8" class="editrow__input">{%for mark in part.parts.mark %}{{mark}}{% if not forloop.last %}&#13;&#10;{% endif %}{% endfor %}</textarea>
                         </td>
                         <td>
-                            <span class="defaultrow__text">{{part.parts.unit|first}}</span>
+                            <span class="defaultrow__text">
+                                {% if part.multiple.marks %}
+                                    {{part.multiple.marks}}
+                                {% endif %}  
+                            </span>
                             <textarea rows="8" class="editrow__input">{%for unit in part.parts.unit %}{{unit}}{% if not forloop.last %}&#13;&#10;{% endif %}{% endfor %}</textarea>
                         </td>
                         <td style="text-align: center;">

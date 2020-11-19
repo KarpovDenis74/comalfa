@@ -64,8 +64,9 @@
                     </div>
                 </form>
                 {% for unit in units %}
-                    <p>
-                        <a class="btn btn-sm text-muted" href="{% url 'catalog_id' unit.id %}" role="button">{{unit.name}}</a>
+                    {% for un in unit %}
+                        <a class="btn btn-sm text-muted" href="{% url 'catalog_id' un.id %}" role="button">{{un.name}}</a> {% if not forloop.last %}-> {% endif %}
+                    {% endfor %}
                     </p>
                 {% endfor %}
             </div> <!-- card body -->
